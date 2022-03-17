@@ -1,0 +1,13 @@
+#lel
+core:
+  core:
+    name: 'Full Core'
+    crafting: 8
+  piece:
+    name: 'Core Piece'
+    crafting: 8
+  shard:
+    #test
+    name: 'Core Shard'
+    droprate: 0.1
+#ssss
