@@ -1,0 +1,13 @@
+#The link to the resource pack (make sure that it is an auto-download link)
+resourcepack: 'https://drive.google.com/uc?id=19Q-5mvULA49LNCtmy21BXi5qxBRtJrti&export=download'
+#Core-Items
+core:
+  core:
+    name: 'Full Core'
+    crafting: 8
+  piece:
+    name: 'Core Piece'
+    crafting: 8
+  shard:
+    name: 'Core Shard'
+    droprate: 0.1
