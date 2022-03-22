@@ -2,7 +2,6 @@ package de.felix_kurz.premiumcustomspawneggs.items;
 
 import de.felix_kurz.premiumcustomspawneggs.configuration.ConfigurationManager;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -13,9 +12,9 @@ public class CorePiece extends ItemStack {
     private ConfigurationManager cfgM = Main.getCfgM();
 
     public CorePiece() {
-        super(Material.GOLDEN_HOE);
+        super(Main.getCfgM().getCoreMaterial("piece"));
         ItemMeta meta = getItemMeta();
-        meta.setCustomModelData(1111112);
+        meta.setCustomModelData(cfgM.getCoreCustomDataModel("piece"));
         meta.setDisplayName(cfgM.getCoreName("piece"));
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
         meta.setUnbreakable(true);

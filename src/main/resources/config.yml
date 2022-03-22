@@ -4,18 +4,24 @@ resourcepack: 'https://www.dropbox.com/sh/rl6uk9su0eenmfy/AACf4JRXb2kYv7COAsU276
 cores:
   fullcore:
     name: '§dFull Core'
+    item: GOLDEN_HOE
+    customModelData: 1111111
     crafting: 8
     enchanted: false
   piece:
     name: '§dCore Piece'
+    item: GOLDEN_HOE
+    customModelData: 1111112
     crafting: 8
     enchanted: false
   shard:
     name: '§dCore Shard'
+    item: GOLDEN_HOE
+    customModelData: 1111113
     enchanted: false
-    baby-drop: true
+    babyDrop: true
     #The order of the mobs doesn't affect the plugin
-    mob-droprate:
+    mobDroprate:
       #Passive mobs
       AXOLOTL: 0
       BAT: 0
@@ -60,6 +66,7 @@ cores:
       CREEPER: 0.1
       DROWNED: 0.1
       ELDER_GUARDIAN: 0.1
+      ENDERMAN: 0.1
       ENDERMITE: 0.1
       EVOKER: 0.1
       GHAST: 0.1
@@ -83,3 +90,21 @@ cores:
       ZOGLIN: 0.1
       ZOMBIE: 0.1
       ZOMBIE_VILLAGRE: 0.1
+eggs:
+  #The name (not the ingame name) should be all lower case without spaces (e.g. explosive_chicken instead of Explosive Chicken)
+  explosive_chicken:
+    name: "§cExplosive Chicken"
+    item: "CHICKEN_SPAWN_EGG"
+    enchanted: true
+    throwable: true
+    amountFromCrafting: 1
+    ingredients:
+      A: "fullcore"
+      B: "FEATHER"
+      C: "IRON_INGOT"
+    recipe:
+      row1: "BCB"
+      row2: "CAC"
+      row3: "BCB"
+    spawnedEntity: "explosive_chicken"
+    amount: 1
