@@ -1,13 +1,85 @@
-#The link to the resource pack (make sure that it is an auto-download link)
-resourcepack: 'https://drive.google.com/uc?id=19Q-5mvULA49LNCtmy21BXi5qxBRtJrti&export=download'
+#The link to the resource pack (make sure that it is an auto-download link, e.g. a dropbox-link should end on "?dl=1")
+resourcepack: 'https://www.dropbox.com/sh/rl6uk9su0eenmfy/AACf4JRXb2kYv7COAsU276-Oa?dl=1'
 #Core-Items
-core:
-  core:
-    name: 'Full Core'
+cores:
+  fullcore:
+    name: '§dFull Core'
     crafting: 8
+    enchanted: false
   piece:
-    name: 'Core Piece'
+    name: '§dCore Piece'
     crafting: 8
+    enchanted: false
   shard:
-    name: 'Core Shard'
-    droprate: 0.1
+    name: '§dCore Shard'
+    enchanted: false
+    baby-drop: true
+    #The order of the mobs doesn't affect the plugin
+    mob-droprate:
+      #Passive mobs
+      AXOLOTL: 0
+      BAT: 0
+      CAT: 0
+      CHICKEN: 0
+      COD: 0
+      COW: 0
+      DONKEY: 0
+      FOX: 0
+      GLOW_SQUID: 0
+      HORSE: 0
+      MUSHROOM_COW: 0
+      MULE: 0
+      OCELOT: 0
+      PARROT: 0
+      PIG: 0
+      PUFFERFISH: 0
+      RABBIT: 0
+      SALMON: 0
+      SHEEP: 0
+      SKELETON_HORSE: 0
+      SNOW_GOLEM: 0
+      SQUID: 0
+      STRIDER: 0
+      TROPICAL_FISH: 0
+      TURTLE: 0
+      VILLAGER: 0
+      WANDERING_TRADER: 0
+      #Neutral mobs
+      BEE: 0.1
+      DOLPHIN: 0.1
+      GOAT: 0.1
+      IRON_GOLEM: 0.1
+      LLAME: 0.1
+      PIGLIN: 0.1
+      PANDA: 0.1
+      POLAR_BEAR: 0.1
+      WOLF: 0.1
+      ZOMBIEFIED_PIGLIN: 0.1
+      #Hostile mobs
+      BLAZE: 0.1
+      CREEPER: 0.1
+      DROWNED: 0.1
+      ELDER_GUARDIAN: 0.1
+      ENDERMITE: 0.1
+      EVOKER: 0.1
+      GHAST: 0.1
+      GUARDIAN: 0.1
+      HOGLIN: 0.1
+      HUSK: 0.1
+      MAGMA_CUBE: 0.1
+      PHANTOM: 0.1
+      PIGLIN_BRUTE: 0.1
+      PILLAGER: 0.1
+      RAVAGER: 0.1
+      SHULKER: 0.1
+      SILVERFISH: 0.1
+      SKELETON: 0.1
+      SLIME: 0.1
+      STRAY: 0.1
+      VEX: 0.1
+      VINDICATOR: 0.1
+      WITCH: 0.1
+      WITHER_SKELETON: 0.1
+      ZOGLIN: 0.1
+      ZOMBIE: 0.1
+      ZOMBIE_VILLAGRE: 0.1

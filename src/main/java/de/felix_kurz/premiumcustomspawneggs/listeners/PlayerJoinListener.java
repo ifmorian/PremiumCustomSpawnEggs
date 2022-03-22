@@ -11,7 +11,6 @@ public record PlayerJoinListener(Main plugin) implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         event.getPlayer().setResourcePack(plugin.getCfgM().getResourcePackLink());
-        event.getPlayer().getInventory().addItem(new FullCore());
     }
 
 }
