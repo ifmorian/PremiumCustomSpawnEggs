@@ -92,12 +92,15 @@ cores:
       ZOMBIE_VILLAGRE: 0.1
 eggs:
   #The name (not the ingame name) should be all lower case without spaces (e.g. explosive_chicken instead of Explosive Chicken)
+  #It will be used as an id and should therefore be unique
   explosive_chicken:
     name: "§cExplosive Chicken"
     item: "CHICKEN_SPAWN_EGG"
     enchanted: true
     throwable: true
     amountFromCrafting: 1
+    #Use 'fullcore', 'piece' or 'shard' for those items
+    #Ingredient should be a single letter
     ingredients:
       A: "fullcore"
       B: "FEATHER"

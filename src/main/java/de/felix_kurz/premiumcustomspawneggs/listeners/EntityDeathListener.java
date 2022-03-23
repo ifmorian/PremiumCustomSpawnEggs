@@ -15,7 +15,7 @@ public class EntityDeathListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
         for (String path : cfgM.getShardMobs().getKeys(true)) {
             if (path.equals(event.getEntityType().toString())) {
-                event.getEntity().getLocation().getWorld().dropItemNaturally(event.getEntity().getLocation(), new CoreShard());
+                event.getEntity().getLocation().getWorld().dropItemNaturally(event.getEntity().getLocation(), new CoreShard().getItem());
             }
         }
     }
