@@ -1,10 +1,12 @@
 package de.felix_kurz.premiumcustomspawneggs.main;
 
+import de.felix_kurz.premiumcustomspawneggs.commands.GiveEggCommand;
 import de.felix_kurz.premiumcustomspawneggs.configuration.ConfigurationManager;
 import de.felix_kurz.premiumcustomspawneggs.listeners.PrepareItemCraftListener;
 import de.felix_kurz.premiumcustomspawneggs.listeners.EntityDeathListener;
 import de.felix_kurz.premiumcustomspawneggs.listeners.PlayerJoinListener;
 import de.felix_kurz.premiumcustomspawneggs.listeners.PlayerResourcePackStatusListener;
+import de.felix_kurz.premiumcustomspawneggs.recipes.CustomEgg;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,10 +19,14 @@ public class Main extends JavaPlugin {
         plugin = this;
         cfgM = new ConfigurationManager(this);
 
+        CustomEgg.setupEggs();
+
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         Bukkit.getPluginManager().registerEvents(new EntityDeathListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerResourcePackStatusListener(), this);
         Bukkit.getPluginManager().registerEvents(new PrepareItemCraftListener(), this);
+
+        getCommand("giveegg").setExecutor(new GiveEggCommand());
     }
 
     public void onDisable() {

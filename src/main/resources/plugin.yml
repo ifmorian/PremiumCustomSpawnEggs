@@ -4,3 +4,5 @@ version: 1.0
 main: de.felix_kurz.premiumcustomspawneggs.main.Main
 api-version: 1.18
 softdepend: [NBTAPI]
+commands:
+  giveegg:

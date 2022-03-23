@@ -55,7 +55,7 @@ cores:
       DOLPHIN: 0.1
       GOAT: 0.1
       IRON_GOLEM: 0.1
-      LLAME: 0.1
+      LLAMA: 0.1
       PIGLIN: 0.1
       PANDA: 0.1
       POLAR_BEAR: 0.1
@@ -82,6 +82,7 @@ cores:
       SILVERFISH: 0.1
       SKELETON: 0.1
       SLIME: 0.1
+      SPIDER: 0.1
       STRAY: 0.1
       VEX: 0.1
       VINDICATOR: 0.1

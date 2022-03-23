@@ -44,6 +44,14 @@ public class ConfigurationManager {
         return (ConfigurationSection) cfg.get("cores.shard.mobDroprate");
     }
 
+    public double getDropProbability(String s) {
+        return cfg.getDouble("cores.shard.mobDroprate." + s);
+    }
+
+    public ConfigurationSection getEggs() {
+        return cfg.getConfigurationSection("eggs");
+    }
+
     public ConfigurationSection getEgg(String egg) {
         return (ConfigurationSection) cfg.get("eggs." + egg);
     }

@@ -9,13 +9,15 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 public class EntityDeathListener implements Listener {
 
-    private ConfigurationManager cfgM = Main.getCfgM();
+    private final ConfigurationManager cfgM = Main.getCfgM();
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        for (String path : cfgM.getShardMobs().getKeys(true)) {
+        for (String path : cfgM.getShardMobs().getKeys(false)) {
             if (path.equals(event.getEntityType().toString())) {
-                event.getEntity().getLocation().getWorld().dropItemNaturally(event.getEntity().getLocation(), new CoreShard().getItem());
+                if (cfgM.getDropProbability(path) > Math.random()) {
+                    event.getEntity().getLocation().getWorld().dropItemNaturally(event.getEntity().getLocation(), new CoreShard().getItem());
+                }
             }
         }
     }

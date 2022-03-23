@@ -7,12 +7,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 public class GiveEggCommand implements CommandExecutor {
 
-    private Main plugin = Main.getPlugin();
+    private final Main plugin = Main.getPlugin();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender,@NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -22,6 +23,7 @@ public class GiveEggCommand implements CommandExecutor {
          }
          if (args.length < 2) {
              sender.sendMessage("§cPlease use §6/giveegg <§eplayer§6> <§eegg§6> <§eamount§>");
+             return false;
          }
          new BukkitRunnable() {
             @Override
@@ -32,13 +34,27 @@ public class GiveEggCommand implements CommandExecutor {
                     return;
                 }
                 if (!p.isOnline()) {
-                    sender.sendMessage("§cPlayer isn't online");
+                    sender.sendMessage("§cPlayer is not online");
                     return;
                 }
-                if (args.length == 2) p.getInventory().addItem(CustomEgg.getEggItem(args[1], 1));
+                if (args.length == 2) {
+                    CustomEgg egg = CustomEgg.eggs.get(args[1]);
+                    if (egg == null) {
+                        sender.sendMessage("§cEgg §6" + args[1] + " §cdoes not exist");
+                        return;
+                    }
+                    p.getInventory().addItem(egg.getItem());
+                }
                 else
                     try {
-                        p.getInventory().addItem(CustomEgg.getEggItem(args[1], Integer.parseInt(args[2])));
+                        CustomEgg egg = CustomEgg.eggs.get(args[1]);
+                        if (egg == null) {
+                            sender.sendMessage("§cEgg §6" + args[1] + " §cdoes not exist");
+                            return;
+                        }
+                        ItemStack item = egg.getItem();
+                        item.setAmount(Integer.parseInt(args[2]));
+                        p.getInventory().addItem(item);
                     } catch (Exception ignore) {
                         sender.sendMessage("§cPlease use §6/giveegg <§eplayer§6> <§eegg§6> <§eamount§>");
                     }
