@@ -18,7 +18,7 @@ public class CoreShard {
         item = new ItemStack(cfgM.getCoreMaterial("shard"));
 
         NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setString("core", "shard");
+        nbtItem.setString("pcse_core", "shard");
         item = nbtItem.getItem();
 
         ItemMeta meta = item.getItemMeta();

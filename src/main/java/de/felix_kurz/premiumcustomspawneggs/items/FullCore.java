@@ -18,7 +18,7 @@ public class FullCore {
         item = new ItemStack(cfgM.getCoreMaterial("fullcore"));
 
         NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setString("core", "fullcore");
+        nbtItem.setString("pcse_core", "fullcore");
         item = nbtItem.getItem();
 
         ItemMeta meta = item.getItemMeta();

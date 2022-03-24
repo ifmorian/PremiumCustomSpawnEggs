@@ -18,7 +18,7 @@ public class CorePiece {
         item = new ItemStack(cfgM.getCoreMaterial("piece"));
 
         NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setString("core", "piece");
+        nbtItem.setString("pcse_core", "piece");
         item = nbtItem.getItem();
 
         ItemMeta meta = nbtItem.getItem().getItemMeta();

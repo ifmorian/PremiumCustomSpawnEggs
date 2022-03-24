@@ -22,8 +22,8 @@ public class PrepareItemCraftListener implements Listener {
         for (ItemStack item : event.getInventory().getMatrix()) {
             if (item == null) continue;
             NBTItem nbtItem = new NBTItem(item);
-            if (nbtItem.getString("core").equals("shard")) shards++;
-            else if (nbtItem.getString("core").equals("piece")) pieces++;
+            if (nbtItem.getString("pcse_core").equals("shard")) shards++;
+            else if (nbtItem.getString("pcse_core").equals("piece")) pieces++;
             else otherItems++;
         }
         if (shards == cfgM.getCoreRecipe("piece") && pieces == 0 && otherItems == 0) event.getInventory().setResult(new CorePiece().getItem());

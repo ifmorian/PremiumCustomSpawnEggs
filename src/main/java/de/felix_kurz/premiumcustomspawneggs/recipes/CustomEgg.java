@@ -67,9 +67,9 @@ public class CustomEgg {
         item = new ItemStack(type, amount);
 
         NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setString("entity", entity);
-        nbtItem.setBoolean("throw", throwable);
-        nbtItem.setInteger("amount", spawnAmount);
+        nbtItem.setString("pcse_entity", entity);
+        nbtItem.setBoolean("pcse_throw", throwable);
+        nbtItem.setInteger("pcse_amount", spawnAmount);
         item = nbtItem.getItem();
 
         ItemMeta meta = item.getItemMeta();
