@@ -1,43 +1,41 @@
 package de.felix_kurz.premiumcustomspawneggs.entities;
 
 import de.felix_kurz.premiumcustomspawneggs.entities.nmsentities.CustomZombie;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import org.bukkit.Bukkit;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.monster.Zombie;
 import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftSpider;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Spider;
+import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 
 import java.util.HashMap;
 
 public class CustomMob {
 
-    private String id;
-    private String name;
-    private EntityType type;
-    private int health;
-
-    private Entity entity;
+    public String id;
+    public String name;
+    public String type;
+    public int health;
 
     public static HashMap<String, CustomMob> mobs = new HashMap<>();
 
-    public CustomMob(String id, String name, EntityType type, int health, Entity entity) {
+    public CustomMob(String id, String name, String type, int health) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.health = health;
-        this.entity = entity;
     }
 
     public void spawnEntity(Location l) {
-        Entity entity = l.getWorld().spawnEntity(l, type);
+        ServerLevel world = ((CraftWorld) l.getWorld()).getHandle();
 
-        entity.setCustomNameVisible(true);
-        entity.setCustomName(name);
+        Entity nmsEntity = new Zombie(world);
+
+        nmsEntity.setCustomName(Component.nullToEmpty(name));
+        ((LivingEntity) nmsEntity).setHealth(200);
+        nmsEntity.setPos(l.getX(), l.getY(), l.getZ());
+        world.tryAddFreshEntityWithPassengers(nmsEntity);
     }
 }

@@ -1,5 +1,6 @@
 package de.felix_kurz.premiumcustomspawneggs.commands;
 
+import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
 import de.felix_kurz.premiumcustomspawneggs.entities.nmsentities.CustomZombie;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import de.felix_kurz.premiumcustomspawneggs.recipes.CustomEgg;
@@ -32,6 +33,8 @@ public class GiveEggCommand implements CommandExecutor {
              return false;
          }
          if (args.length < 2) {
+             Player p = (Player) sender;
+             new CustomMob("explosive_chicken", "§cBOOOM", "CHICKEN", 300).spawnEntity(p.getLocation());
              sender.sendMessage("§cPlease use §6/giveegg <§eplayer§6> <§eegg§6> <§eamount§>");
              return false;
          }
