@@ -10,5 +10,6 @@ import org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity;
 public class CustomZombie extends Zombie {
     public CustomZombie(Location l) {
         super(EntityType.ZOMBIE, ((CraftWorld) l.getWorld()).getHandle());
+
     }
 }
