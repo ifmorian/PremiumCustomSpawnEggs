@@ -33,7 +33,6 @@ public class GiveEggCommand implements CommandExecutor {
          }
          if (args.length < 2) {
              sender.sendMessage("§cPlease use §6/giveegg <§eplayer§6> <§eegg§6> <§eamount§>");
-             Player p = (Player) sender;
              return false;
          }
          new BukkitRunnable() {
