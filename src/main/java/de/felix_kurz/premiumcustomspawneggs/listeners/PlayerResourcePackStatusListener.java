@@ -1,6 +1,5 @@
 package de.felix_kurz.premiumcustomspawneggs.listeners;
 
-import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;

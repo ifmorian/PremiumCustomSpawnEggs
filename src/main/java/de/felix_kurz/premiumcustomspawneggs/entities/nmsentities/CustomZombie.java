@@ -1,6 +1,5 @@
 package de.felix_kurz.premiumcustomspawneggs.entities.nmsentities;
 
-import de.felix_kurz.premiumcustomspawneggs.entities.CustomEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Zombie;
 import org.bukkit.Location;
