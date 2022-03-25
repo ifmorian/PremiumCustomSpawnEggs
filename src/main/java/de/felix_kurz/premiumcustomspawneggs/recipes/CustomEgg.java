@@ -4,11 +4,12 @@ import de.felix_kurz.premiumcustomspawneggs.items.CorePiece;
 import de.felix_kurz.premiumcustomspawneggs.items.CoreShard;
 import de.felix_kurz.premiumcustomspawneggs.items.FullCore;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
-import de.tr7zw.nbtapi.NBTItem;
+import net.minecraft.nbt.CompoundTag;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -16,9 +17,7 @@ import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CustomEgg {
@@ -66,11 +65,13 @@ public class CustomEgg {
     public void createItem() {
         item = new ItemStack(type, amount);
 
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setString("pcse_entity", entity);
-        nbtItem.setBoolean("pcse_throw", throwable);
-        nbtItem.setInteger("pcse_amount", spawnAmount);
-        item = nbtItem.getItem();
+        net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        CompoundTag tag = nmsItem.hasTag() ? nmsItem.getTag() : new CompoundTag();
+        tag.putString("pcse_entity", entity);
+        tag.putBoolean("pcse_throw", throwable);
+        tag.putInt("pcse_amount", spawnAmount);
+        nmsItem.setTag(tag);
+        item = CraftItemStack.asBukkitCopy(nmsItem);
 
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);

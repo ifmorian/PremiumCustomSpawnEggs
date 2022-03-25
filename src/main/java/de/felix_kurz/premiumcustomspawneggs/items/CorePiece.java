@@ -2,7 +2,8 @@ package de.felix_kurz.premiumcustomspawneggs.items;
 
 import de.felix_kurz.premiumcustomspawneggs.configuration.ConfigurationManager;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
-import de.tr7zw.nbtapi.NBTItem;
+import net.minecraft.nbt.CompoundTag;
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -17,11 +18,13 @@ public class CorePiece {
     public CorePiece() {
         item = new ItemStack(cfgM.getCoreMaterial("piece"));
 
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setString("pcse_core", "piece");
-        item = nbtItem.getItem();
+        net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+        CompoundTag tag = nmsItem.hasTag() ? nmsItem.getTag() : new CompoundTag();
+        tag.putString("pcse_core", "piece");
+        nmsItem.setTag(tag);
+        item = CraftItemStack.asBukkitCopy(nmsItem);
 
-        ItemMeta meta = nbtItem.getItem().getItemMeta();
+        ItemMeta meta = item.getItemMeta();
         meta.setCustomModelData(cfgM.getCoreCustomDataModel("piece"));
         meta.setDisplayName(cfgM.getCoreName("piece"));
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
