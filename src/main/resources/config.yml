@@ -117,4 +117,6 @@ mobs:
     name: "§cExplosive Chicken"
     health: 50
     speed: 1
+    type: "chicken"
+
 
