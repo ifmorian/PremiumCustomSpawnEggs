@@ -3,18 +3,16 @@ package de.felix_kurz.premiumcustomspawneggs.listeners;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Position;
-import net.minecraft.world.level.levelgen.Heightmap;
+import de.felix_kurz.premiumcustomspawneggs.recipes.CustomEgg;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Vector;
@@ -26,11 +24,22 @@ public class PlayerInteractListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player p = event.getPlayer();
-        if (p.getInventory().getItem(event.getHand()) == null) return;
+        if (p.getInventory().getItem(event.getHand()) == null || event.getHand() == EquipmentSlot.OFF_HAND) return;
+
+        ItemStack nmsItem = CraftItemStack.asNMSCopy(p.getInventory().getItem(event.getHand()));
+        if (nmsItem.hasTag()) {
+            if (!nmsItem.getTag().getString("pcse_entity").equals("")) {
+                if (event.getClickedBlock() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+                Location l = event.getClickedBlock().getLocation();
+                l.setY(l.getY() + 1);
+                new CustomMob("explosive_chicken", "§cBOOOM", "AXOLOTL", 10, 2).spawnEntity(l, p.getUniqueId());
+                event.setCancelled(true);
+                return;
+            }
+        }
+
         Block b = event.getPlayer().getTargetBlockExact(50);
         if (b == null) return;
-        if (event.getHand() != EquipmentSlot.HAND) return;
-        CraftBlock b1 = (CraftBlock) b;
         Location bl = b.getLocation();
         bl.setY(bl.getY() + 1.2);
         Location el = CustomMob.e.getBukkitEntity().getLocation();

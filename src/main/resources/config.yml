@@ -112,3 +112,9 @@ eggs:
       row3: "BCB"
     spawnedEntity: "explosive_chicken"
     amount: 1
+mobs:
+  explosive_chicken:
+    name: "§cExplosive Chicken"
+    health: 50
+    speed: 1
+

@@ -1,5 +1,6 @@
 package de.felix_kurz.premiumcustomspawneggs.configuration;
 
+import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -54,6 +55,10 @@ public class ConfigurationManager {
 
     public ConfigurationSection getEgg(String egg) {
         return (ConfigurationSection) cfg.get("eggs." + egg);
+    }
+
+    public CustomMob getMob(String mob) {
+        return null;
     }
 
 }
