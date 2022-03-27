@@ -34,7 +34,7 @@ public class GiveEggCommand implements CommandExecutor {
          }
          if (args.length < 2) {
              Player p = (Player) sender;
-             new CustomMob("explosive_chicken", "§cBOOOM", "CHICKEN", 300).spawnEntity(p.getLocation());
+             new CustomMob("explosive_chicken", "§cBOOOM", "AXOLOTL", 10, 2).spawnEntity(p.getLocation(), p.getUniqueId());
              sender.sendMessage("§cPlease use §6/giveegg <§eplayer§6> <§eegg§6> <§eamount§>");
              return false;
          }

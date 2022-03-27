@@ -19,6 +19,7 @@ public class PrepareItemCraftListener implements Listener {
     public void onPrepareItemCraft(PrepareItemCraftEvent event) {
         int shards = 0;
         int pieces = 0;
+        int fullcore = 0;
         int otherItems = 0;
         for (ItemStack item : event.getInventory().getMatrix()) {
             if (item == null) continue;
@@ -27,11 +28,13 @@ public class PrepareItemCraftListener implements Listener {
             CompoundTag tag = nmsItem.getTag();
             if (tag.getString("pcse_core").equals("shard")) shards++;
             else if (tag.getString("pcse_core").equals("piece")) pieces++;
+            else if (tag.getString("pcse_core").equals("fullcore")) fullcore++;
             else otherItems++;
         }
         if (shards == cfgM.getCoreRecipe("piece") && pieces == 0 && otherItems == 0) event.getInventory().setResult(new CorePiece().getItem());
         else if (pieces == cfgM.getCoreRecipe("fullcore") && shards == 0 && otherItems == 0) event.getInventory().setResult(new FullCore().getItem());
         else if (pieces != 0 || shards != 0) event.getInventory().setResult(null);
+        else if (fullcore == 2 && event.getInventory().getResult().equals(new ItemStack(cfgM.getCoreMaterial("fullcore")))) event.getInventory().setResult(null);
     }
 
 }
