@@ -115,12 +115,14 @@ eggs:
 mobs:
   explosive_chicken:
     name: "§cExplosive Chicken"
+    type: "chicken"
     health: 50
     speed: 1
-    type: "chicken"
     explosionRadius: 5
+    explosionDamage: 5
     explosionBreakBlocks: true
     #In ticks (1 second is usually 20 ticks)
-    explosionTimer:
+    #Set to 0 for no explosion
+    explosionTimer: 100
 
 

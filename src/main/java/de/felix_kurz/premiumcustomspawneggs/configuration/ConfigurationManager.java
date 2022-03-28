@@ -58,7 +58,17 @@ public class ConfigurationManager {
     }
 
     public CustomMob getMob(String mob) {
-        return null;
+        return new CustomMob(
+                mob,
+                cfg.getString("mobs." + mob + ".name"),
+                cfg.getString("mobs." + mob + ".type"),
+                cfg.getInt("mobs." + mob + ".health"),
+                cfg.getDouble("mobs." + mob + ".spped"),
+                cfg.getDouble("mobs." + mob + ".explosionRadius"),
+                cfg.getInt("mobs." + mob + ".explosionDamage"),
+                cfg.getBoolean("mobs." + mob + ".explosionBreakBlocks"),
+                cfg.getInt("mobs." + mob + ".explosionTimer")
+        );
     }
 
 }

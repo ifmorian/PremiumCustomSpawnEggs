@@ -3,7 +3,7 @@ package de.felix_kurz.premiumcustomspawneggs.listeners;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
-import de.felix_kurz.premiumcustomspawneggs.recipes.CustomEgg;
+import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Location;
@@ -32,7 +32,7 @@ public class PlayerInteractListener implements Listener {
                 if (event.getClickedBlock() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
                 Location l = event.getClickedBlock().getLocation();
                 l.setY(l.getY() + 1);
-                new CustomMob("explosive_chicken", "§cBOOOM", "AXOLOTL", 10, 2).spawnEntity(l, p.getUniqueId());
+                Main.getCfgM().getMob("explosive_chicken").spawnEntity(l, p.getUniqueId());
                 event.setCancelled(true);
                 return;
             }
