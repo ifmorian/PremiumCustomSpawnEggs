@@ -49,7 +49,7 @@ public class CustomMob {
             public void run() {
 
             }
-        }.runTaskTimer(Main.getPlugin(), 10, 10);
+        }.runTaskTimer(Main.getPlugin(), 5, 5);
         CompoundTag tag = new CompoundTag();
         tag.putUUID("pcse_control", player);
         tag.putInt("pcse_runnable", r.getTaskId());

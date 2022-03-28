@@ -118,5 +118,9 @@ mobs:
     health: 50
     speed: 1
     type: "chicken"
+    explosionRadius: 5
+    explosionBreakBlocks: true
+    #In ticks (1 second is usually 20 ticks)
+    explosionTimer:
 
 
