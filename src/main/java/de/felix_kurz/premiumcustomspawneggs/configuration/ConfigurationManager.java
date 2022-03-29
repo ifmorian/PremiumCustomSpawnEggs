@@ -6,6 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.UUID;
+
 public class ConfigurationManager {
 
     private Main plugin;
@@ -57,17 +59,20 @@ public class ConfigurationManager {
         return (ConfigurationSection) cfg.get("eggs." + egg);
     }
 
-    public CustomMob getMob(String mob) {
+    public CustomMob getMob(String mob, UUID owner) {
         return new CustomMob(
+                owner,
                 mob,
                 cfg.getString("mobs." + mob + ".name"),
                 cfg.getString("mobs." + mob + ".type"),
                 cfg.getInt("mobs." + mob + ".health"),
-                cfg.getDouble("mobs." + mob + ".speed"),
+                (float) cfg.getDouble("mobs." + mob + ".speed"),
+                cfg.getBoolean("mobs." + mob + ".multiRemote"),
                 cfg.getBoolean("mobs." + mob + ".dropsOnDeath"),
                 cfg.getBoolean("mobs." + mob + ".dropsOnExplosion"),
-                cfg.getDouble("mobs." + mob + ".explosionRadius"),
+                cfg.getInt("mobs." + mob + ".explosionRadius"),
                 cfg.getInt("mobs." + mob + ".explosionDamage"),
+                cfg.getDouble("mobs." + mob + ".explosionPower"),
                 cfg.getDouble("mobs." + mob + ".explosionBreakBlockChance"),
                 cfg.getDouble("mobs." + mob + ".explosionDropBlockChance"),
                 cfg.getInt("mobs." + mob + ".explosionTimer")

@@ -1,20 +1,22 @@
 package de.felix_kurz.premiumcustomspawneggs.entities;
 
-import com.comphenix.protocol.PacketType;
+import com.comphenix.packetwrapper.WrapperPlayServerExplosion;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
+import de.felix_kurz.premiumcustomspawneggs.entities.pathfindergoals.WalkToLocationGoal;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -28,37 +30,44 @@ public class CustomMob {
 
     public LivingEntity entity;
 
+    public UUID owner;
+
     public String id;
     public String name;
     public String type;
     public int health;
-    public double speed;
+    public float speed;
+    public boolean multiRemote;
     public boolean dropOnDeath;
     public boolean dropOnExplosion;
-    public double explosionRadius;
+    public int explosionRadius;
     public int explosionDamage;
+    public double exlosionPower;
     public double explosionBreakBlockChance;
     public double explosionDropBlockChance;
     public int explosionTimer;
 
-    public static HashMap<String, CustomMob> mobs = new HashMap<>();
+    public static HashMap<Integer, CustomMob> mobs = new HashMap<>();
 
-    public CustomMob(String id, String name, String type, int health, double speed, boolean dropOnDeath, boolean dropOnExplosion, double explosionRadius, int explosionDamage, double explosionBreakBlocksChance, double explosionDropBlockChance, int explosionTimer) {
+    public CustomMob(UUID owner, String id, String name, String type, int health, float speed, boolean multiRemote, boolean dropOnDeath, boolean dropOnExplosion, int explosionRadius, int explosionDamage, double explosionPower, double explosionBreakBlocksChance, double explosionDropBlockChance, int explosionTimer) {
+        this.owner = owner;
         this.id = id;
         this.name = name;
         this.type = type;
         this.health = health;
         this.speed = speed;
+        this.multiRemote = multiRemote;
         this.dropOnDeath = dropOnDeath;
         this.dropOnExplosion = dropOnExplosion;
         this.explosionRadius = explosionRadius;
         this.explosionDamage = explosionDamage;
+        this.exlosionPower = explosionPower;
         this.explosionBreakBlockChance = explosionBreakBlocksChance;
         this.explosionDropBlockChance = explosionDropBlockChance;
         this.explosionTimer = explosionTimer;
     }
 
-    public void spawnEntity(Location l, UUID player) {
+    public void spawnEntity(Location l) {
         Level level = ((CraftWorld) l.getWorld()).getHandle();
 
         BukkitTask r = new BukkitRunnable() {
@@ -67,24 +76,33 @@ public class CustomMob {
 
             }
         }.runTaskTimer(Main.getPlugin(), 5, 5);
+
+        entity = new PathfinderMob(EntTypes.valueOf(type.toUpperCase()).type, level) {
+            @Override
+            public float getWalkTargetValue(BlockPos blockposition) {
+                return super.getWalkTargetValue(blockposition);
+            }
+        };
+        entity.setPos(l.getX(), l.getY(), l.getZ());
+
         CompoundTag tag = new CompoundTag();
-        tag.putUUID("pcse_control", player);
+        tag.putUUID("pcse_control", owner);
         tag.putInt("pcse_runnable", r.getTaskId());
 
-        switch(type.toLowerCase()) {
-            case "zombie" -> {
-                entity = new Zombie(EntityType.ZOMBIE, level);
-                ((Zombie) entity).goalSelector.removeAllGoals();
-            }
-            default -> {
-                entity = new Zombie(EntityType.ZOMBIE, level);
-                ((Zombie) entity).goalSelector.removeAllGoals();
-            }
-        }
-        entity.setPos(l.getX(), l.getY(), l.getZ());
+        entity.addTag(String.valueOf(tag));
+
         idd = entity.getId();
         e = entity;
         level.addFreshEntity(entity);
+        ((PathfinderMob) entity).goalSelector.removeAllGoals();
+        ((PathfinderMob) entity).goalSelector.addGoal(0, new WalkToLocationGoal(entity, l.add(new Vector(10, 0, 0)), speed));
+
+        entity.getBukkitEntity().setCustomName(name);
+        ((org.bukkit.entity.LivingEntity) entity.getBukkitEntity()).getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+        entity.setHealth(health);
+
+        if (!entity.getBukkitEntity().getNearbyEntities(0.01, 0.01, 0.01).isEmpty()) entity.push(Math.random() / 10 - 0.05, 0.01, Math.random() / 10 - 0.05);
+
 
         new BukkitRunnable() {
             @Override
@@ -98,30 +116,33 @@ public class CustomMob {
     private void explode() {
         if (entity.isAlive()) {
             Location l = entity.getBukkitEntity().getLocation();
-            PacketContainer packet1 = manager.createPacket(PacketType.Play.Server.EXPLOSION);
-            packet1.getDoubles().write(0, l.getX());
-            packet1.getDoubles().write(1, l.getY());
-            packet1.getDoubles().write(2, l.getZ());
-            packet1.getFloat().write(0, (float) explosionRadius);
-            manager.broadcastServerPacket(packet1);
+            WrapperPlayServerExplosion packet = new WrapperPlayServerExplosion();
+            packet.setRadius(explosionRadius);
+            packet.setX(l.getX());
+            packet.setY(l.getY());
+            packet.setZ(l.getZ());
+            packet.broadcastPacket();
             entity.getBukkitEntity().getNearbyEntities(explosionRadius, explosionRadius, explosionRadius).forEach(ent -> {
                 if (ent instanceof org.bukkit.entity.LivingEntity ent1) {
-                    ent1.damage(explosionDamage);
+                    if (ent1.getUniqueId().equals(owner)) return;
+                    ent1.damage(explosionDamage, Bukkit.getPlayer(owner));
+                    ent1.setVelocity(new Vector(ent1.getLocation().getX() - l.getX(), ent1.getLocation().getY() - l.getY() + 0.001, ent1.getLocation().getZ() - l.getZ()).normalize().multiply(exlosionPower).add(new Vector(0,0.2 * exlosionPower,0)));
                 }
             });
-            if (explosionBreakBlockChance > Math.random()) {
-                for (int x = (int) (l.getX() - explosionRadius); x <= l.getX() + explosionRadius; x++) {
-                    for (int y = (int) (l.getY() - explosionRadius); y <= l.getY() + explosionRadius; y++) {
-                        for (int z = (int) (l.getZ() - explosionRadius); z <= l.getZ() + explosionRadius; z++) {
+            //From Synapz (https://www.spigotmc.org/members/synapz.93056/)
+            int bx = l.getBlockX();
+            int by = l.getBlockY();
+            int bz = l.getBlockZ();
+            for(int x = bx - explosionRadius; x <= bx + explosionRadius; x++) {
+                for(int y = by + explosionRadius; y >= by - explosionRadius; y--) {
+                    for(int z = bz - explosionRadius; z <= bz + explosionRadius; z++) {
+                        double distance = ((bx-x) * (bx-x) + ((bz-z) * (bz-z)) + ((by-y) * (by-y)));
+                        if(distance < explosionRadius * explosionRadius) {
+                            if (explosionBreakBlockChance <= Math.random()) continue;
                             if (explosionDropBlockChance > Math.random()) {
                                 l.getWorld().getBlockAt(x, y, z).breakNaturally();
                             } else {
-                                PacketContainer packet2 = manager.createPacket(PacketType.Play.Server.BLOCK_BREAK);
-                                packet2.getIntegers().write(0, entity.getId());
-                                packet2.getIntegers().write(1,((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF));
-                                packet2.getBytes().write(0, (byte) 10);
-                                manager.broadcastServerPacket(packet2);
-                                if (true) {}
+                                l.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
                             }
                         }
                     }

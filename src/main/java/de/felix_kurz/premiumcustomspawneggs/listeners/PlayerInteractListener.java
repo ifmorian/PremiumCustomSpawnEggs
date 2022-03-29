@@ -32,7 +32,7 @@ public class PlayerInteractListener implements Listener {
                 if (event.getClickedBlock() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
                 Location l = event.getClickedBlock().getLocation();
                 l.setY(l.getY() + 1);
-                Main.getCfgM().getMob("explosive_chicken").spawnEntity(l, p.getUniqueId());
+                Main.getCfgM().getMob("explosive_chicken", p.getUniqueId()).spawnEntity(l);
                 event.setCancelled(true);
                 return;
             }

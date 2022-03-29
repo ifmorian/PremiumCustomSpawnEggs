@@ -1,0 +1,80 @@
+package de.felix_kurz.premiumcustomspawneggs.entities;
+
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+
+public enum EntTypes {
+
+    AXOLOTL(EntityType.AXOLOTL),
+    BAT(EntityType.BAT),
+    CAT(EntityType.CAT),
+    CHICKEN(EntityType.CHICKEN),
+    COD(EntityType.COD),
+    COW(EntityType.COW),
+    DONKEY(EntityType.DONKEY),
+    FOX(EntityType.FOX),
+    GLOW_SQUID(EntityType.GLOW_SQUID),
+    HORSE(EntityType.HORSE),
+    MUSHROOM_COW(EntityType.MOOSHROOM),
+    MULE(EntityType.MULE),
+    OCELOT(EntityType.OCELOT),
+    PARROT(EntityType.PARROT),
+    PIG(EntityType.PIG),
+    PUFFERFISH(EntityType.PUFFERFISH),
+    RABBIT(EntityType.RABBIT),
+    SALMON(EntityType.SALMON),
+    SHEEP(EntityType.SHEEP),
+    SKELETON_HORSE(EntityType.SKELETON_HORSE),
+    SNOW_GOLEM(EntityType.SNOW_GOLEM),
+    SQUID(EntityType.SQUID),
+    STRIDER(EntityType.STRIDER),
+    TROPICAL_FISH(EntityType.TROPICAL_FISH),
+    TURTLE(EntityType.TURTLE),
+    VILLAGER(EntityType.VILLAGER),
+    WANDERING_TRADER(EntityType.WANDERING_TRADER),
+    BEE(EntityType.BEE),
+    DOLPHIN(EntityType.DOLPHIN),
+    GOAT(EntityType.GOAT),
+    IRON_GOLEM(EntityType.IRON_GOLEM),
+    LLAMA(EntityType.LLAMA),
+    PIGLIN(EntityType.PIGLIN),
+    PANDA(EntityType.PANDA),
+    POLAR_BEAR(EntityType.POLAR_BEAR),
+    WOLF(EntityType.WOLF),
+    ZOMBIEFIED_PIGLIN(EntityType.ZOMBIFIED_PIGLIN),
+    BLAZE(EntityType.BLAZE),
+    CREEPER(EntityType.CREEPER),
+    DROWNED(EntityType.DROWNED),
+    ELDER_GUARDIAN(EntityType.ELDER_GUARDIAN),
+    ENDERMAN(EntityType.ENDERMAN),
+    ENDERMITE(EntityType.ENDERMITE),
+    EVOKER(EntityType.EVOKER),
+    GHAST(EntityType.GHAST),
+    GUARDIAN(EntityType.GUARDIAN),
+    HOGLIN(EntityType.HOGLIN),
+    HUSK(EntityType.HUSK),
+    MAGMA_CUBE(EntityType.MAGMA_CUBE),
+    PHANTOM(EntityType.PHANTOM),
+    PIGLIN_BRUTE(EntityType.PIGLIN_BRUTE),
+    PILLAGER(EntityType.PILLAGER),
+    RAVAGER(EntityType.RAVAGER),
+    SHULKER(EntityType.SHULKER),
+    SILVERFISH(EntityType.SILVERFISH),
+    SKELETON(EntityType.SKELETON),
+    SLIME(EntityType.SLIME),
+    SPIDER(EntityType.SPIDER),
+    STRAY(EntityType.STRAY),
+    VEX(EntityType.VEX),
+    VINDICATOR(EntityType.VINDICATOR),
+    WITCH(EntityType.WITCH),
+    WITHER_SKELETON(EntityType.WITHER_SKELETON),
+    ZOGLIN(EntityType.ZOGLIN),
+    ZOMBIE(EntityType.ZOMBIE),
+    ZOMBIE_VILLAGRE(EntityType.ZOMBIE_VILLAGER);
+
+    public final EntityType type;
+
+    EntTypes(EntityType<? extends Entity> entity) {
+        this.type = entity;
+    }
+}
