@@ -109,20 +109,18 @@ public class CustomMob {
                     ent1.damage(explosionDamage);
                 }
             });
-            if (explosionBreakBlocks) {
+            if (explosionBreakBlockChance > Math.random()) {
                 for (int x = (int) (l.getX() - explosionRadius); x <= l.getX() + explosionRadius; x++) {
                     for (int y = (int) (l.getY() - explosionRadius); y <= l.getY() + explosionRadius; y++) {
                         for (int z = (int) (l.getZ() - explosionRadius); z <= l.getZ() + explosionRadius; z++) {
-                            if (explosionBreakBlockChance > Math.random()) {
-                                if (explosionDropBlockChance > Math.random()) {
-                                    l.getWorld().getBlockAt(x, y, z).breakNaturally();
-                                } else {
-                                    PacketContainer packet2 = manager.createPacket(PacketType.Play.Server.BLOCK_BREAK);
-                                    packet2.getIntegers().write(0, entity.getId());
-                                    packet2.getIntegers().write(1,((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF));
-                                    packet2.getBytes().write(0, (byte) 10);
-                                    manager.broadcastServerPacket(packet2);
-                                }
+                            if (explosionDropBlockChance > Math.random()) {
+                                l.getWorld().getBlockAt(x, y, z).breakNaturally();
+                            } else {
+                                PacketContainer packet2 = manager.createPacket(PacketType.Play.Server.BLOCK_BREAK);
+                                packet2.getIntegers().write(0, entity.getId());
+                                packet2.getIntegers().write(1,((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF));
+                                packet2.getBytes().write(0, (byte) 10);
+                                manager.broadcastServerPacket(packet2);
                             }
                         }
                     }
