@@ -121,6 +121,7 @@ public class CustomMob {
                                 packet2.getIntegers().write(1,((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF));
                                 packet2.getBytes().write(0, (byte) 10);
                                 manager.broadcastServerPacket(packet2);
+                                if (true) {}
                             }
                         }
                     }
