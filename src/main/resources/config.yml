@@ -118,9 +118,17 @@ mobs:
     type: "chicken"
     health: 50
     speed: 1
+    dropsOnDeath: true
+    dropsOnExplosion: false
     explosionRadius: 5
     explosionDamage: 5
-    explosionBreakBlocks: true
+    #Set to 1 to destroy every block in range, set to 0 to turn off breaking blocks
+    explosionBreakBlockChance: 0.9
+    #If Blocks should drop loot (usually an explosion drops every second block)
+    #Keep in mind that blocks will only be broken depending on explosionBreakBlockChance
+    #e.g. if explosionBreakBlockChance and explosionDropBlockChance are both set to 0.5
+    #every 4th block will drop loot
+    explosionDropBlockChance: 0.5
     #In ticks (1 second is usually 20 ticks)
     #Set to 0 for no explosion
     explosionTimer: 100

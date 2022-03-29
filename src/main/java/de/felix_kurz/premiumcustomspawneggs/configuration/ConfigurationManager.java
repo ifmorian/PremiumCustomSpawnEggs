@@ -63,10 +63,13 @@ public class ConfigurationManager {
                 cfg.getString("mobs." + mob + ".name"),
                 cfg.getString("mobs." + mob + ".type"),
                 cfg.getInt("mobs." + mob + ".health"),
-                cfg.getDouble("mobs." + mob + ".spped"),
+                cfg.getDouble("mobs." + mob + ".speed"),
+                cfg.getBoolean("mobs." + mob + ".dropsOnDeath"),
+                cfg.getBoolean("mobs." + mob + ".dropsOnExplosion"),
                 cfg.getDouble("mobs." + mob + ".explosionRadius"),
                 cfg.getInt("mobs." + mob + ".explosionDamage"),
-                cfg.getBoolean("mobs." + mob + ".explosionBreakBlocks"),
+                cfg.getDouble("mobs." + mob + ".explosionBreakBlockChance"),
+                cfg.getDouble("mobs." + mob + ".explosionDropBlockChance"),
                 cfg.getInt("mobs." + mob + ".explosionTimer")
         );
     }
