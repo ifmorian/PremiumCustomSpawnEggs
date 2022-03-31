@@ -7,12 +7,9 @@ import de.felix_kurz.premiumcustomspawneggs.entities.pathfindergoals.WalkToLocat
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.pathfinder.Path;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,21 +51,9 @@ public class PlayerInteractListener implements Listener {
                 if (mob != null) {
                     PathfinderMob e = mob.entity;
                     if (mob.r != null) mob.r.cancel();
-//                    e.getNavigation().moveTo(bl.getX(), bl.getY(), bl.getZ(), mob.speed);
                     e.goalSelector.removeAllGoals();
                     e.goalSelector.addGoal(0, new WalkToLocationGoal(mob, bl, mob.speed));
                 }
-
-//                I was so stupid writing that stuff below
-//                bl.setY(bl.getY() + 1.2);
-//                Location el = e.getBukkitEntity().getLocation();
-//                Vec3 vec = new Vec3(bl.getX() - el.getX(), bl.getY() - el.getY(), bl.getZ() - el.getZ());
-//                e.setDeltaMovement(vec.normalize().multiply(0.2, 0, 0.2));
-//                Location loc = e.getBukkitEntity().getLocation();
-//                loc.setDirection(new Vector(vec.x, 0, vec.z));
-//                e.getBukkitEntity().teleport(loc);
-//                el.add(e.getBukkitEntity().getLocation().getDirection());
-//                if (p.getWorld().getBlockAt(el).getType().isSolid()) e.getBukkitEntity().setVelocity(new Vector(0,0.3,0));
             }
         }
 

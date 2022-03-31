@@ -174,7 +174,7 @@ mobs:
     #breakSpeed * 5 Ticks till next attack (1 = 1/4 second; use Integers only)
     breakSpeed: 1
     walkToBlockSpeed: 1.2
-    #This method has a runtim of O(n^3), be careful with big numbers
+    #This method has a runtime of O(n^3), be careful with big numbers
     breakTriggerRange: 15
     multiBreak: false
     prioritizeBlocks: false
@@ -190,4 +190,3 @@ activeAbilities:
     maxDistMob: 20
     #clicked location: "clicked", entity (specify below): "entity", blocktype: "block"
     goTo: "clicked"
-

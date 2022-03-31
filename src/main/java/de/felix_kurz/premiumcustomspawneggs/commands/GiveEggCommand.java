@@ -1,25 +1,14 @@
 package de.felix_kurz.premiumcustomspawneggs.commands;
 
-import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
-import de.felix_kurz.premiumcustomspawneggs.entities.nmsentities.CustomZombie;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import de.felix_kurz.premiumcustomspawneggs.recipes.CustomEgg;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftSpider;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftZombie;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 public class GiveEggCommand implements CommandExecutor {

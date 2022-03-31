@@ -3,6 +3,6 @@ author: Felix Kurz
 version: 1.0
 main: de.felix_kurz.premiumcustomspawneggs.main.Main
 api-version: 1.18
-softdepend: [ProtocolLib, PacketWrapper]
+softdepend: [ProtocolLib]
 commands:
   giveegg:

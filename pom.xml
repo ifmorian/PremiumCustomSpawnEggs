@@ -87,13 +87,6 @@
             <artifactId>ProtocolLib</artifactId>
             <version>4.7.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.comphenix.packetwrapper</groupId>
-            <artifactId>PacketWrapper</artifactId>
-            <version>1.13-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/PacketWrapper.jar</systemPath>
-        </dependency>
     </dependencies>
 
 </project>

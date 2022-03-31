@@ -1,6 +1,5 @@
 package de.felix_kurz.premiumcustomspawneggs.entities;
 
-import com.comphenix.packetwrapper.*;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -23,9 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -35,7 +32,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import javax.swing.*;
 import java.util.*;
 
 public class CustomMob {
@@ -194,35 +190,41 @@ public class CustomMob {
                         final double[] maxDistance = {attackTriggerRange + 1};
                         final double[] prio = {attackEntities.size()};
                         final boolean[] notDamaged = {true};
+                        final boolean[] dmgSmth = {false};
+
                         entity.getBukkitEntity().getNearbyEntities(attackTriggerRange, attackTriggerRange, attackTriggerRange).forEach(e -> {
                             if (!(e instanceof LivingEntity le)) return;
                             CustomMob leMob = mobs.get(le.getEntityId());
                             if (leMob != null) {
                                 if (leMob.owner.equals(owner)) return;
                             }
+
                             if ((attackEntities.contains(le.getType().toString()) || attackEntities.contains("ALL")) && !le.getUniqueId().equals(owner)) {
                                 double distance = e.getLocation().distance(entity.getBukkitEntity().getLocation());
-                                if (distance < maxDistance[0] || attackEntities.indexOf(le.getType().toString()) < prio[0]) {
-                                    Path path = entity.getNavigation().createPath(((CraftEntity)le).getHandle(), 0);
-                                    if (path != null && path.canReach()) {
+                                Path path = entity.getNavigation().createPath(((CraftEntity)le).getHandle(), 0);
+
+                                if (path != null && path.canReach()) {
+                                    if (distance < maxDistance[0] || attackEntities.indexOf(le.getType().toString()) < prio[0]) {
                                         entity.getNavigation().moveTo(path, walkToTargetSpeed);
                                         movesToEntity[0] = true;
                                         prio[0] = attackEntities.indexOf(le.getType().toString());
                                         maxDistance[0] = distance;
-                                        if (distance <= 1.9 && notDamaged[0] && attackRotation[0] <= 0) {
-                                            le.damage(attackDamage, entity.getBukkitEntity());
-                                            if (!multiAttack) notDamaged[0] = false;
-                                            attackRotation[0] = attackSpeed;
-                                            Location l = entity.getBukkitEntity().getLocation();
-                                            l.setY(l.getY() + entity.getEyeHeight());
-                                            l.add(l.getDirection().multiply(.5));
-                                            l.getWorld().spawnParticle(Particle.CRIT, l, 30, 0.3, 0.3, 0.3);
-                                            entity.swing(InteractionHand.MAIN_HAND);
-                                        }
+                                    }
+
+                                    if (distance <= 1.9 && notDamaged[0] && attackRotation[0] <= 0) {
+                                        le.damage(attackDamage, entity.getBukkitEntity());
+                                        dmgSmth[0] = true;
+                                        notDamaged[0] = multiAttack;
+                                        Location l = entity.getBukkitEntity().getLocation();
+                                        l.setY(l.getY() + entity.getEyeHeight());
+                                        l.add(l.getDirection().multiply(.4));
+                                        l.getWorld().spawnParticle(Particle.CRIT, l, 5);
+                                        entity.swing(InteractionHand.MAIN_HAND);
                                     }
                                 }
                             }
                         });
+                        if (dmgSmth[0]) attackRotation[0] = attackSpeed;
                         attackRotation[0]--;
                     }
                     if (!prioritizeBlocks && movesToEntity[0]) return;
@@ -230,6 +232,7 @@ public class CustomMob {
                         double maxDistance = breakTriggerRange + 1;
                         double prio = breakBlocks.size();
                         boolean notDamaged = true;
+                        boolean dmgSmth = false;
 
                         Location l = entity.getBukkitEntity().getLocation();
                         int bx = l.getBlockX();
@@ -246,45 +249,45 @@ public class CustomMob {
 
                                         if (!breakBlocks.contains(block.getType().toString())) continue;
 
-                                        if (distance < maxDistance || breakBlocks.indexOf(block.getType().toString()) < prio) {
-                                            Path path = entity.getNavigation().createPath(x, y, z, 3);
+                                        Path path = entity.getNavigation().createPath(x + ((x - bx) > 0 ? 1 : -1), y, z + ((z - bz) > 0 ? 1 : -1), 1);
 
-                                            if (path != null && path.canReach()) {
+                                        if (path != null && path.canReach()) {
+                                            if (distance < maxDistance || breakBlocks.indexOf(block.getType().toString()) < prio) {
                                                 entity.getNavigation().moveTo(path, walkToBlockSpeed);
                                                 prio = breakBlocks.indexOf(block.getType().toString());
                                                 maxDistance = distance;
-                                                System.out.println(breakRotation[0]);
-                                                if (distance <= 3 && notDamaged && breakRotation[0] <= 0) {
-                                                    if (!multiBreak) notDamaged = false;
-                                                    breakRotation[0] = breakSpeed;
+                                            }
+                                            if (distance <= 2 && notDamaged && breakRotation[0] <= 0) {
+                                                notDamaged = multiBreak;
+                                                dmgSmth = true;
 
-                                                    int damage = breakDamage;
-                                                    if (blocks.containsKey(block)) damage = blocks.get(block) + breakDamage;
-                                                    blocks.put(block, damage);
+                                                int damage = breakDamage;
+                                                if (blocks.containsKey(block)) damage = blocks.get(block) + breakDamage;
+                                                blocks.put(block, damage);
 
-                                                   if (damage > 9) {
-                                                       block.breakNaturally();
-                                                       blocks.remove(block);
-                                                   } else {
-                                                       PacketContainer packet2 = manager.createPacket(PacketType.Play.Server.BLOCK_BREAK_ANIMATION);
-                                                       packet2.getIntegers().write(0, aID[0]);
-                                                       packet2.getIntegers().write(1, damage);
-                                                       packet2.getBlockPositionModifier().write(0, new BlockPosition(x,y,z));
-                                                       manager.broadcastServerPacket(packet2);
-                                                       aID[0]++;
-                                                   }
+                                               if (damage > 9) {
+                                                   block.breakNaturally();
+                                                   blocks.remove(block);
+                                               } else {
+                                                   PacketContainer packet2 = manager.createPacket(PacketType.Play.Server.BLOCK_BREAK_ANIMATION);
+                                                   packet2.getIntegers().write(0, aID[0]);
+                                                   packet2.getIntegers().write(1, damage);
+                                                   packet2.getBlockPositionModifier().write(0, new BlockPosition(x,y,z));
+                                                   manager.broadcastServerPacket(packet2);
+                                                   aID[0]++;
+                                               }
 
-                                                    l.setY(l.getY() + entity.getEyeHeight());
-                                                    l.add(l.getDirection().multiply(.5));
-                                                    l.getWorld().spawnParticle(Particle.CRIT_MAGIC, l, 30, 0.3, 0.3, 0.3);
-                                                    entity.swing(InteractionHand.MAIN_HAND);
-                                                }
+                                                l.setY(l.getY() + entity.getEyeHeight());
+                                                l.add(l.getDirection().multiply(.5));
+                                                l.getWorld().spawnParticle(Particle.CRIT_MAGIC, l, 5);
+                                                entity.swing(InteractionHand.MAIN_HAND);
                                             }
                                         }
                                     }
                                 }
                             }
                         }
+                        if (dmgSmth) breakRotation[0] = breakSpeed;
                         breakRotation[0]--;
                     }
                 }
@@ -295,12 +298,12 @@ public class CustomMob {
     private void explode() {
         if (entity.isAlive()) {
             Location l = entity.getBukkitEntity().getLocation();
-            WrapperPlayServerExplosion packet1 = new WrapperPlayServerExplosion();
-            packet1.setRadius(explosionRadius);
-            packet1.setX(l.getX());
-            packet1.setY(l.getY());
-            packet1.setZ(l.getZ());
-            packet1.broadcastPacket();
+            PacketContainer packet = manager.createPacket(PacketType.Play.Server.EXPLOSION);
+            packet.getDoubles().write(0, l.getX());
+            packet.getDoubles().write(1, l.getY());
+            packet.getDoubles().write(2, l.getZ());
+            packet.getFloat().write(0, (float) explosionRadius);
+            manager.broadcastServerPacket(packet);
             entity.getBukkitEntity().getNearbyEntities(explosionRadius, explosionRadius, explosionRadius).forEach(ent -> {
                 if (ent instanceof org.bukkit.entity.LivingEntity ent1) {
                     if (ent1.getUniqueId().equals(owner)) return;
