@@ -173,7 +173,7 @@ mobs:
     breakDamage: 1
     #breakSpeed * 5 Ticks till next attack (1 = 1/4 second; use Integers only)
     breakSpeed: 1
-    walktToBlockSpeed: 1.2
+    walkToBlockSpeed: 1.2
     #This method has a runtim of O(n^3), be careful with big numbers
     breakTriggerRange: 15
     multiBreak: false

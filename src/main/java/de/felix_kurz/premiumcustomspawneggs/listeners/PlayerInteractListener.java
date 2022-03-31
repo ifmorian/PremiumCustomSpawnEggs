@@ -7,9 +7,12 @@ import de.felix_kurz.premiumcustomspawneggs.entities.pathfindergoals.WalkToLocat
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.pathfinder.Path;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,7 +38,7 @@ public class PlayerInteractListener implements Listener {
                 if (event.getClickedBlock() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
                 Location l = event.getClickedBlock().getLocation();
                 l.setY(l.getY() + 1);
-                Main.getCfgM().getMob("explosive_chicken", p.getUniqueId()).spawnEntity(l);
+                Main.getCfgM().getMob(nmsItem.getTag().getString("pcse_entity"), p.getUniqueId()).spawnEntity(l);
                 if (p.getGameMode() != GameMode.CREATIVE) item.setAmount(item.getAmount() - 1);
                 event.setCancelled(true);
                 return;

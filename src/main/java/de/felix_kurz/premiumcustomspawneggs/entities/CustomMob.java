@@ -1,8 +1,11 @@
 package de.felix_kurz.premiumcustomspawneggs.entities;
 
 import com.comphenix.packetwrapper.*;
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.BlockPosition;
 import de.felix_kurz.premiumcustomspawneggs.items.remote.MobRemote;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import net.minecraft.core.BlockPos;
@@ -20,7 +23,9 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -30,6 +35,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
+import javax.swing.*;
 import java.util.*;
 
 public class CustomMob {
@@ -64,11 +70,13 @@ public class CustomMob {
     public int attackDamage;
     public int attackSpeed;
     public float walkToTargetSpeed;
+    public int attackTriggerRange;
     public boolean multiAttack;
     public List<String> breakBlocks;
     public int breakDamage;
     public int breakSpeed;
     public float walkToBlockSpeed;
+    public int breakTriggerRange;
     public boolean multiBreak;
     public boolean prioritizeBlocks;
 
@@ -76,10 +84,12 @@ public class CustomMob {
 
     public static HashMap<Integer, CustomMob> mobs = new HashMap<>();
 
+    private final static HashMap<Block, Integer> blocks = new HashMap<>();
+
     public CustomMob(UUID owner, String id, String name, String type, int health, float speed, boolean multiRemote, boolean dropOnDeath,
                      boolean dropOnExplosion, int explosionRadius, int explosionDamage, String explosionPotion, int explosionPotionDuration, int explosionPotionAmplifier, double explosionPower, int lavaRadius,
                      double explosionBreakBlocksChance, double explosionDropBlockChance, int explosionTimer, boolean randomStroll, float strollSpeed, String attackEntities, int attackDamage, int attackSpeed,
-                     float walkToTargetSpeed, boolean multiAttack, String breakBlocks, int breakDamage, int breakSpeed, float walkToBlockSpeed,
+                     float walkToTargetSpeed, int attackTriggerRange, boolean multiAttack, String breakBlocks, int breakDamage, int breakSpeed, float walkToBlockSpeed, int breakTriggerRange,
                      boolean multiBreak, boolean prioritizeBlocks) {
         this.owner = owner;
         this.id = id;
@@ -106,11 +116,13 @@ public class CustomMob {
         this.attackDamage = attackDamage;
         this.attackSpeed = attackSpeed;
         this.walkToTargetSpeed = walkToTargetSpeed;
+        this.attackTriggerRange = attackTriggerRange;
         this.multiAttack = multiAttack;
         this.breakBlocks = new ArrayList<>(Arrays.asList(breakBlocks.toUpperCase().split(",")));
         this.breakDamage = breakDamage;
         this.breakSpeed = breakSpeed;
         this.walkToBlockSpeed = walkToBlockSpeed;
+        this.breakTriggerRange = breakTriggerRange;
         this.multiBreak = multiBreak;
         this.prioritizeBlocks = prioritizeBlocks;
     }
@@ -170,17 +182,19 @@ public class CustomMob {
         entity.goalSelector.removeAllGoals();
         if (randomStroll) entity.goalSelector.addGoal(0, new RandomStrollGoal(entity, strollSpeed));
         entity.goalSelector.addGoal(1, new FloatGoal(entity));
-        if (!attackEntities.contains("NONE") && !breakBlocks.contains("NONE")) {
+        if (!attackEntities.contains("NONE") || !breakBlocks.contains("NONE")) {
             r = new BukkitRunnable() {
                 final int[] attackRotation = {0};
                 final int[] breakRotation = {0};
+                final boolean[] movesToEntity = {false};
+                final int[] aID = {0};
                 @Override
                 public void run() {
                     if (!attackEntities.contains("NONE")) {
-                        final double[] maxDistance = {25};
+                        final double[] maxDistance = {attackTriggerRange + 1};
                         final double[] prio = {attackEntities.size()};
                         final boolean[] notDamaged = {true};
-                        entity.getBukkitEntity().getNearbyEntities(20, 20, 20).forEach(e -> {
+                        entity.getBukkitEntity().getNearbyEntities(attackTriggerRange, attackTriggerRange, attackTriggerRange).forEach(e -> {
                             if (!(e instanceof LivingEntity le)) return;
                             CustomMob leMob = mobs.get(le.getEntityId());
                             if (leMob != null) {
@@ -188,10 +202,11 @@ public class CustomMob {
                             }
                             if ((attackEntities.contains(le.getType().toString()) || attackEntities.contains("ALL")) && !le.getUniqueId().equals(owner)) {
                                 double distance = e.getLocation().distance(entity.getBukkitEntity().getLocation());
-                                if (distance < maxDistance[0] && attackEntities.indexOf(le.getType().toString()) < prio[0]) {
+                                if (distance < maxDistance[0] || attackEntities.indexOf(le.getType().toString()) < prio[0]) {
                                     Path path = entity.getNavigation().createPath(((CraftEntity)le).getHandle(), 0);
                                     if (path != null && path.canReach()) {
                                         entity.getNavigation().moveTo(path, walkToTargetSpeed);
+                                        movesToEntity[0] = true;
                                         prio[0] = attackEntities.indexOf(le.getType().toString());
                                         maxDistance[0] = distance;
                                         if (distance <= 1.9 && notDamaged[0] && attackRotation[0] <= 0) {
@@ -201,7 +216,7 @@ public class CustomMob {
                                             Location l = entity.getBukkitEntity().getLocation();
                                             l.setY(l.getY() + entity.getEyeHeight());
                                             l.add(l.getDirection().multiply(.5));
-                                            l.getWorld().spawnParticle(Particle.CRIT_MAGIC, l, 30, 0.3, 0.3, 0.3);
+                                            l.getWorld().spawnParticle(Particle.CRIT, l, 30, 0.3, 0.3, 0.3);
                                             entity.swing(InteractionHand.MAIN_HAND);
                                         }
                                     }
@@ -210,35 +225,67 @@ public class CustomMob {
                         });
                         attackRotation[0]--;
                     }
+                    if (!prioritizeBlocks && movesToEntity[0]) return;
                     if (!breakBlocks.contains("NONE")) {
-                        final double maxDistance = 25;
-                        final double prio = breakBlocks.size();
-                        final boolean notDamaged = true;
+                        double maxDistance = breakTriggerRange + 1;
+                        double prio = breakBlocks.size();
+                        boolean notDamaged = true;
+
                         Location l = entity.getBukkitEntity().getLocation();
                         int bx = l.getBlockX();
                         int by = l.getBlockY();
                         int bz = l.getBlockZ();
-                        for(int x = bx - 10; x <= bx + 10; x++) {
-                            for(int y = by + 10; y >= by - 10; y--) {
-                                for(int z = bz - 10; z <= bz + 10; z++) {
-                                    double distance = ((bx-x) * (bx-x) + ((bz-z) * (bz-z)) + ((by-y) * (by-y)));
-                                    if(distance < 10 * 10) {
-                                        Block block = l.getWorld().getBlockAt(x,y,z);
-                                        if (distance < maxDistance && breakBlocks.indexOf(block.getType().toString()) < prio) {
-                                            Path path = entity.getNavigation().createPath(x, y, z, 2);
-                                            if (path != null && path.canReach()) {
 
+                        for (int x = bx - breakTriggerRange; x <= bx + breakTriggerRange; x++) {
+                            for (int y = by + breakTriggerRange; y >= by - breakTriggerRange; y--) {
+                                for (int z = bz - breakTriggerRange; z <= bz + breakTriggerRange; z++) {
+                                    double distance = l.distance(new Location(l.getWorld(), x, y, z));
+
+                                    if (distance < breakTriggerRange) {
+                                        Block block = l.getWorld().getBlockAt(x,y,z);
+
+                                        if (!breakBlocks.contains(block.getType().toString())) continue;
+
+                                        if (distance < maxDistance || breakBlocks.indexOf(block.getType().toString()) < prio) {
+                                            Path path = entity.getNavigation().createPath(x, y, z, 3);
+
+                                            if (path != null && path.canReach()) {
+                                                entity.getNavigation().moveTo(path, walkToBlockSpeed);
+                                                prio = breakBlocks.indexOf(block.getType().toString());
+                                                maxDistance = distance;
+                                                System.out.println(breakRotation[0]);
+                                                if (distance <= 3 && notDamaged && breakRotation[0] <= 0) {
+                                                    if (!multiBreak) notDamaged = false;
+                                                    breakRotation[0] = breakSpeed;
+
+                                                    int damage = breakDamage;
+                                                    if (blocks.containsKey(block)) damage = blocks.get(block) + breakDamage;
+                                                    blocks.put(block, damage);
+
+                                                   if (damage > 9) {
+                                                       block.breakNaturally();
+                                                       blocks.remove(block);
+                                                   } else {
+                                                       PacketContainer packet2 = manager.createPacket(PacketType.Play.Server.BLOCK_BREAK_ANIMATION);
+                                                       packet2.getIntegers().write(0, aID[0]);
+                                                       packet2.getIntegers().write(1, damage);
+                                                       packet2.getBlockPositionModifier().write(0, new BlockPosition(x,y,z));
+                                                       manager.broadcastServerPacket(packet2);
+                                                       aID[0]++;
+                                                   }
+
+                                                    l.setY(l.getY() + entity.getEyeHeight());
+                                                    l.add(l.getDirection().multiply(.5));
+                                                    l.getWorld().spawnParticle(Particle.CRIT_MAGIC, l, 30, 0.3, 0.3, 0.3);
+                                                    entity.swing(InteractionHand.MAIN_HAND);
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-//                        PacketContainer packet2 = manager.createPacket(PacketType.Play.Server.BLOCK_BREAK_ANIMATION);
-//                        packet2.getIntegers().write(0, entity.getId());
-//                        packet2.getIntegers().write(1, 5);
-//                        packet2.getBlockPositionModifier().write(0, new BlockPosition(1,1,1));
-//                        manager.broadcastServerPacket(packet2);
+                        breakRotation[0]--;
                     }
                 }
             }.runTaskTimer(Main.getPlugin(), 5, 5);

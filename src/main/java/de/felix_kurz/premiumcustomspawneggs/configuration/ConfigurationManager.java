@@ -86,11 +86,13 @@ public class ConfigurationManager {
                 cfg.getInt("mobs." + mob + ".attackDamage"),
                 cfg.getInt("mobs." + mob + ".attackSpeed"),
                 (float) cfg.getDouble("mobs." + mob + ".walkToTargetSpeed"),
+                cfg.getInt("mobs." + mob + ".attackTriggerRange"),
                 cfg.getBoolean("mobs." + mob + ".multiAttack"),
                 cfg.getString("mobs." + mob + ".breakBlocks"),
                 cfg.getInt("mobs." + mob + ".breakDamage"),
                 cfg.getInt("mobs." + mob + ".breakSpeed"),
                 (float) cfg.getDouble("mobs." + mob + ".walkToBlockSpeed"),
+                cfg.getInt("mobs." + mob + ".breakTriggerRange"),
                 cfg.getBoolean("mobs." + mob + ".multiBreak"),
                 cfg.getBoolean("mobs." + mob + ".prioritizeBlocks")
         );
