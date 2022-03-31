@@ -81,12 +81,18 @@ public class ConfigurationManager {
                 cfg.getDouble("mobs." + mob + ".explosionDropBlockChance"),
                 cfg.getInt("mobs." + mob + ".explosionTimer"),
                 cfg.getBoolean("mobs." + mob + ".randomStroll"),
+                (float) cfg.getDouble("mobs." + mob + ".strollSpeed"),
                 cfg.getString("mobs." + mob + ".attackEntities"),
                 cfg.getInt("mobs." + mob + ".attackDamage"),
                 cfg.getInt("mobs." + mob + ".attackSpeed"),
+                (float) cfg.getDouble("mobs." + mob + ".walkToTargetSpeed"),
+                cfg.getBoolean("mobs." + mob + ".multiAttack"),
                 cfg.getString("mobs." + mob + ".breakBlocks"),
                 cfg.getInt("mobs." + mob + ".breakDamage"),
-                cfg.getInt("mobs." + mob + ".breakSpeed")
+                cfg.getInt("mobs." + mob + ".breakSpeed"),
+                (float) cfg.getDouble("mobs." + mob + ".walkToBlockSpeed"),
+                cfg.getBoolean("mobs." + mob + ".multiBreak"),
+                cfg.getBoolean("mobs." + mob + ".prioritizeBlocks")
         );
     }
 

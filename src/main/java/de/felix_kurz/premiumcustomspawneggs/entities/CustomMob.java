@@ -1,11 +1,8 @@
 package de.felix_kurz.premiumcustomspawneggs.entities;
 
 import com.comphenix.packetwrapper.*;
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.BlockPosition;
 import de.felix_kurz.premiumcustomspawneggs.items.remote.MobRemote;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import net.minecraft.core.BlockPos;
@@ -15,18 +12,15 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.lighting.BlockLightEngine;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -65,12 +59,18 @@ public class CustomMob {
     public double explosionDropBlockChance;
     public int explosionTimer;
     public boolean randomStroll;
+    public float strollSpeed;
     public List<String> attackEntities;
     public int attackDamage;
     public int attackSpeed;
+    public float walkToTargetSpeed;
+    public boolean multiAttack;
     public List<String> breakBlocks;
     public int breakDamage;
     public int breakSpeed;
+    public float walkToBlockSpeed;
+    public boolean multiBreak;
+    public boolean prioritizeBlocks;
 
     public BukkitTask r;
 
@@ -78,8 +78,9 @@ public class CustomMob {
 
     public CustomMob(UUID owner, String id, String name, String type, int health, float speed, boolean multiRemote, boolean dropOnDeath,
                      boolean dropOnExplosion, int explosionRadius, int explosionDamage, String explosionPotion, int explosionPotionDuration, int explosionPotionAmplifier, double explosionPower, int lavaRadius,
-                     double explosionBreakBlocksChance, double explosionDropBlockChance, int explosionTimer, boolean randomStroll, String attackEntities, int attackDamage, int attackSpeed,
-                     String breakBlocks, int breakDamage, int breakSpeed) {
+                     double explosionBreakBlocksChance, double explosionDropBlockChance, int explosionTimer, boolean randomStroll, float strollSpeed, String attackEntities, int attackDamage, int attackSpeed,
+                     float walkToTargetSpeed, boolean multiAttack, String breakBlocks, int breakDamage, int breakSpeed, float walkToBlockSpeed,
+                     boolean multiBreak, boolean prioritizeBlocks) {
         this.owner = owner;
         this.id = id;
         this.name = name;
@@ -100,12 +101,18 @@ public class CustomMob {
         this.explosionDropBlockChance = explosionDropBlockChance;
         this.explosionTimer = explosionTimer;
         this.randomStroll = randomStroll;
+        this.strollSpeed = strollSpeed;
         this.attackEntities = new ArrayList<>(Arrays.asList(attackEntities.toUpperCase().split(",")));
         this.attackDamage = attackDamage;
         this.attackSpeed = attackSpeed;
+        this.walkToTargetSpeed = walkToTargetSpeed;
+        this.multiAttack = multiAttack;
         this.breakBlocks = new ArrayList<>(Arrays.asList(breakBlocks.toUpperCase().split(",")));
         this.breakDamage = breakDamage;
         this.breakSpeed = breakSpeed;
+        this.walkToBlockSpeed = walkToBlockSpeed;
+        this.multiBreak = multiBreak;
+        this.prioritizeBlocks = prioritizeBlocks;
     }
 
     public void spawnEntity(Location l) {
@@ -161,8 +168,8 @@ public class CustomMob {
 
     public void startBehavior() {
         entity.goalSelector.removeAllGoals();
-        if (randomStroll) entity.goalSelector.addGoal(0, new RandomStrollGoal(entity, 1));
-//        entity.goalSelector.addGoal(1, new FloatGoal(entity));
+        if (randomStroll) entity.goalSelector.addGoal(0, new RandomStrollGoal(entity, strollSpeed));
+        entity.goalSelector.addGoal(1, new FloatGoal(entity));
         if (!attackEntities.contains("NONE") && !breakBlocks.contains("NONE")) {
             r = new BukkitRunnable() {
                 final int[] attackRotation = {0};
@@ -184,12 +191,12 @@ public class CustomMob {
                                 if (distance < maxDistance[0] && attackEntities.indexOf(le.getType().toString()) < prio[0]) {
                                     Path path = entity.getNavigation().createPath(((CraftEntity)le).getHandle(), 0);
                                     if (path != null && path.canReach()) {
-                                        entity.getNavigation().moveTo(path, speed);
+                                        entity.getNavigation().moveTo(path, walkToTargetSpeed);
                                         prio[0] = attackEntities.indexOf(le.getType().toString());
                                         maxDistance[0] = distance;
                                         if (distance <= 1.9 && notDamaged[0] && attackRotation[0] <= 0) {
                                             le.damage(attackDamage, entity.getBukkitEntity());
-                                            notDamaged[0] = false;
+                                            if (!multiAttack) notDamaged[0] = false;
                                             attackRotation[0] = attackSpeed;
                                             Location l = entity.getBukkitEntity().getLocation();
                                             l.setY(l.getY() + entity.getEyeHeight());
@@ -204,10 +211,31 @@ public class CustomMob {
                         attackRotation[0]--;
                     }
                     if (!breakBlocks.contains("NONE")) {
-//                        int a = 0;
+                        final double maxDistance = 25;
+                        final double prio = breakBlocks.size();
+                        final boolean notDamaged = true;
+                        Location l = entity.getBukkitEntity().getLocation();
+                        int bx = l.getBlockX();
+                        int by = l.getBlockY();
+                        int bz = l.getBlockZ();
+                        for(int x = bx - 10; x <= bx + 10; x++) {
+                            for(int y = by + 10; y >= by - 10; y--) {
+                                for(int z = bz - 10; z <= bz + 10; z++) {
+                                    double distance = ((bx-x) * (bx-x) + ((bz-z) * (bz-z)) + ((by-y) * (by-y)));
+                                    if(distance < 10 * 10) {
+                                        Block block = l.getWorld().getBlockAt(x,y,z);
+                                        if (distance < maxDistance && breakBlocks.indexOf(block.getType().toString()) < prio) {
+                                            Path path = entity.getNavigation().createPath(x, y, z, 2);
+                                            if (path != null && path.canReach()) {
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
 //                        PacketContainer packet2 = manager.createPacket(PacketType.Play.Server.BLOCK_BREAK_ANIMATION);
-//                        packet2.getIntegers().write(0, a);
-//                        a++;
+//                        packet2.getIntegers().write(0, entity.getId());
 //                        packet2.getIntegers().write(1, 5);
 //                        packet2.getBlockPositionModifier().write(0, new BlockPosition(1,1,1));
 //                        manager.broadcastServerPacket(packet2);
