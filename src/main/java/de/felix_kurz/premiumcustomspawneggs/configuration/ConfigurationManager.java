@@ -72,10 +72,21 @@ public class ConfigurationManager {
                 cfg.getBoolean("mobs." + mob + ".dropsOnExplosion"),
                 cfg.getInt("mobs." + mob + ".explosionRadius"),
                 cfg.getInt("mobs." + mob + ".explosionDamage"),
+                cfg.getString("mobs." + mob + ".explosionPotion"),
+                cfg.getInt("mobs." + mob + ".explosionPotionDuration"),
+                cfg.getInt("mobs." + mob + ".explosionPotionAmplifier"),
                 cfg.getDouble("mobs." + mob + ".explosionPower"),
+                cfg.getInt("mobs." + mob + ".lavaRadius"),
                 cfg.getDouble("mobs." + mob + ".explosionBreakBlockChance"),
                 cfg.getDouble("mobs." + mob + ".explosionDropBlockChance"),
-                cfg.getInt("mobs." + mob + ".explosionTimer")
+                cfg.getInt("mobs." + mob + ".explosionTimer"),
+                cfg.getBoolean("mobs." + mob + ".randomStroll"),
+                cfg.getString("mobs." + mob + ".attackEntities"),
+                cfg.getInt("mobs." + mob + ".attackDamage"),
+                cfg.getInt("mobs." + mob + ".attackSpeed"),
+                cfg.getString("mobs." + mob + ".breakBlocks"),
+                cfg.getInt("mobs." + mob + ".breakDamage"),
+                cfg.getInt("mobs." + mob + ".breakSpeed")
         );
     }
 

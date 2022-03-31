@@ -1,3 +1,9 @@
+#Resources:
+#Material list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#EntityType list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html (Only use living entities, e.g. do not use 'ARROW')
+#
+#
+#
 #The link to the resource pack (make sure that it is an auto-download link, e.g. a dropbox-link should end on "?dl=1")
 resourcepack: 'https://www.dropbox.com/sh/rl6uk9su0eenmfy/AACf4JRXb2kYv7COAsU276-Oa?dl=1'
 #Core-Items
@@ -113,17 +119,29 @@ eggs:
     spawnedEntity: "explosive_chicken"
     amount: 1
 mobs:
+  #Mobs should be unique
   explosive_chicken:
     name: "§cExplosive Chicken"
     type: "chicken"
     health: 50
     speed: 1
-    multiRemote: false
+    multiRemote: true
     dropsOnDeath: true
+    #
+    #Explosion settings
+    #
     dropsOnExplosion: false
+    #Set to 0 to disable
     explosionRadius: 5
     explosionDamage: 5
+    explosionPotion: "JUMP"
+    #In ticks (1 second is usually 20 ticks)
+    explosionPotionDuration: 10
+    explosionPotionAmplifier: 2
+    #Knockback
     explosionPower: 3
+    #Set to 0 to disable
+    lavaRadius: 1
     #Set to 1 to destroy every block in range, set to 0 to turn off breaking blocks
     explosionBreakBlockChance: 0.9
     #If Blocks should drop loot (usually an explosion drops every second block)
@@ -134,5 +152,33 @@ mobs:
     #In ticks (1 second is usually 20 ticks)
     #Set to 0 for no explosion
     explosionTimer: 100
+    #
+    #Passive abilities:
+    #
+    randomStroll: true
+    #
+    #Entity type for specific entity, "all" for all and, "none" for none
+    attackEntities: "ZOMBIE,SKELETON"
+    attackDamage: 5
+    #attackSpeed * 5 Ticks till next attack (use Integers only)
+    attackSpeed: 2
+    #
+    #Material for specific blocks, "all" for all and, "none" for none
+    breakBlocks: "OBSIDIAN,DIAMOND_BLOCK"
+    #0-10 (0 = moves to block without damaging it; 10 = breaks one hit)
+    breakDamage: 1
+    #breakSpeed * 5 Ticks till next attack (1 = 1/4 second; use Integers only)
+    breakSpeed: 1
 
+activeAbilities:
+  #Abilities should be unique
+  walk_to_spot:
+    name: "§aWalk to Click"
+    #0: right click; 1: left click; 2: shift right click; 3: shift left click
+    key: 0
+    #Max range of the remote to the mob and the clicked locations
+    maxDistClick: 50
+    maxDistMob: 20
+    #clicked location: "clicked", entity (specify below): "entity", blocktype: "blcok"
+    goTo: "clicked"
 

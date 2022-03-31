@@ -54,7 +54,9 @@ public class GiveEggCommand implements CommandExecutor {
                         sender.sendMessage("§cEgg §6" + args[1] + " §cdoes not exist");
                         return;
                     }
-                    p.getInventory().addItem(egg.getItem());
+                    ItemStack i = egg.getItem();
+                    i.setAmount(1);
+                    p.getInventory().addItem(i);
                 }
                 else
                     try {

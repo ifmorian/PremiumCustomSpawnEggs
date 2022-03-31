@@ -5,12 +5,16 @@ import de.felix_kurz.premiumcustomspawneggs.configuration.ConfigurationManager;
 import de.felix_kurz.premiumcustomspawneggs.listeners.*;
 import de.felix_kurz.premiumcustomspawneggs.recipes.CustomEgg;
 import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
 
     private static ConfigurationManager cfgM;
     private static Main plugin;
+
+    public static final ConsoleCommandSender c = Bukkit.getConsoleSender();
+    public static final String PRE = "§f[§dPremiumCustomSpawnEggs§f] ";
 
     public void onEnable() {
         plugin = this;
