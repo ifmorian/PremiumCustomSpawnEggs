@@ -34,13 +34,16 @@ public class CustomEgg {
     private final String[] matrix;
     private final String entity;
     private final int spawnAmount;
+    private boolean glow;
+    private String glowColor;
 
     private ItemStack item;
     private ShapedRecipe recipe;
 
     public static final HashMap<String, CustomEgg> eggs = new HashMap<>();
 
-    public CustomEgg(String id, String name, String type, boolean enchanted, boolean throwable, int amount, HashMap<Character, String> ingredients, String[] matrix, String entity, int spawnAmount) {
+    public CustomEgg(String id, String name, String type, boolean enchanted, boolean throwable, int amount, HashMap<Character, String> ingredients,
+                     String[] matrix, String entity, int spawnAmount, boolean glow, String glowColor) {
         this.id = id;
         this.name = name;
         this.type = Material.getMaterial(type);
@@ -51,6 +54,8 @@ public class CustomEgg {
         this.matrix = matrix;
         this.entity = entity;
         this.spawnAmount = spawnAmount;
+        this.glow = glow;
+        this.glowColor = glowColor;
     }
 
     public static void setupEggs() {
@@ -70,6 +75,8 @@ public class CustomEgg {
         tag.putString("pcse_entity", entity);
         tag.putBoolean("pcse_throw", throwable);
         tag.putInt("pcse_amount", spawnAmount);
+        tag.putBoolean("pcse_glow", glow);
+        tag.putString("pcse_color", glowColor);
         nmsItem.setTag(tag);
         item = CraftItemStack.asBukkitCopy(nmsItem);
 
@@ -124,7 +131,9 @@ public class CustomEgg {
                 ingredients,
                 new String[]{section.getString("recipe.row1"), section.getString("recipe.row2"), section.getString("recipe.row3")},
                 section.getString("spawnedEntity"),
-                section.getInt("amount")
+                section.getInt("amount"),
+                section.getBoolean("glow"),
+                section.getString("glowColor")
         );
     }
 

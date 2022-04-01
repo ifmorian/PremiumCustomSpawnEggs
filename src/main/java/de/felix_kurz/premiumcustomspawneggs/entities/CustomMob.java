@@ -36,7 +36,7 @@ import java.util.*;
 
 public class CustomMob {
 
-    private ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+    private final ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
     public PathfinderMob entity;
 
@@ -133,6 +133,7 @@ public class CustomMob {
                 return super.getWalkTargetValue(blockposition);
             }
         };
+
         entity.setPos(l.getX(), l.getY(), l.getZ());
         level.addFreshEntity(entity);
 

@@ -105,6 +105,10 @@ eggs:
     item: "CHICKEN_SPAWN_EGG"
     enchanted: true
     throwable: true
+    #If it's throwable
+    glow: true
+    glowColor: "blue"
+    #
     amountFromCrafting: 1
     #Use 'fullcore', 'piece' or 'shard' for those items
     #Ingredient should be a single letter
@@ -123,6 +127,8 @@ mobs:
   explosive_chicken:
     name: "§cExplosive Chicken"
     type: "chicken"
+    glow: true
+    glowColor: "blue"
     health: 50
     speed: 1
     multiRemote: true
