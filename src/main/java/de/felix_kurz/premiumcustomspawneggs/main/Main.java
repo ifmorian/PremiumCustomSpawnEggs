@@ -31,6 +31,7 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EntityDeathListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerResourcePackStatusListener(), this);
         Bukkit.getPluginManager().registerEvents(new PrepareItemCraftListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ProjectileHitListener(), this);
 
         getCommand("giveegg").setExecutor(new GiveEggCommand());
 
@@ -47,6 +48,9 @@ public class Main extends JavaPlugin {
 
     public void onDisable() {
         Bukkit.clearRecipes();
+        for (ChatColor color : ChatColor.values()) {
+            sb.getTeam(color.asBungee().getName()).unregister();
+        }
     }
 
     public static ConfigurationManager getCfgM() {

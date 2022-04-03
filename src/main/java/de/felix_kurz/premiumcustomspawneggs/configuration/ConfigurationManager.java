@@ -65,11 +65,12 @@ public class ConfigurationManager {
                 mob,
                 cfg.getString("mobs." + mob + ".name"),
                 cfg.getString("mobs." + mob + ".type"),
+                cfg.getBoolean("mobs." + mob + ".glow"),
+                cfg.getString("mobs." + mob + ".glowColor"),
                 cfg.getInt("mobs." + mob + ".health"),
                 (float) cfg.getDouble("mobs." + mob + ".speed"),
                 cfg.getBoolean("mobs." + mob + ".multiRemote"),
                 cfg.getBoolean("mobs." + mob + ".dropsOnDeath"),
-                cfg.getBoolean("mobs." + mob + ".dropsOnExplosion"),
                 cfg.getInt("mobs." + mob + ".explosionRadius"),
                 cfg.getInt("mobs." + mob + ".explosionDamage"),
                 cfg.getString("mobs." + mob + ".explosionPotion"),
@@ -80,11 +81,14 @@ public class ConfigurationManager {
                 cfg.getDouble("mobs." + mob + ".explosionBreakBlockChance"),
                 cfg.getDouble("mobs." + mob + ".explosionDropBlockChance"),
                 cfg.getInt("mobs." + mob + ".explosionTimer"),
+                cfg.getDouble("nobs." + mob + ".explosionFlashRange"),
                 cfg.getBoolean("mobs." + mob + ".randomStroll"),
                 (float) cfg.getDouble("mobs." + mob + ".strollSpeed"),
                 cfg.getString("mobs." + mob + ".attackEntities"),
+                cfg.getString("mobs." + mob + ".attackType"),
                 cfg.getInt("mobs." + mob + ".attackDamage"),
                 cfg.getInt("mobs." + mob + ".attackSpeed"),
+                cfg.getInt("mobs." + mob + ".attackRange"),
                 (float) cfg.getDouble("mobs." + mob + ".walkToTargetSpeed"),
                 cfg.getInt("mobs." + mob + ".attackTriggerRange"),
                 cfg.getBoolean("mobs." + mob + ".multiAttack"),
@@ -94,7 +98,8 @@ public class ConfigurationManager {
                 (float) cfg.getDouble("mobs." + mob + ".walkToBlockSpeed"),
                 cfg.getInt("mobs." + mob + ".breakTriggerRange"),
                 cfg.getBoolean("mobs." + mob + ".multiBreak"),
-                cfg.getBoolean("mobs." + mob + ".prioritizeBlocks")
+                cfg.getBoolean("mobs." + mob + ".prioritizeBlocks"),
+                cfg.getInt("mobs." + mob + ".maxBlocks")
         );
     }
 

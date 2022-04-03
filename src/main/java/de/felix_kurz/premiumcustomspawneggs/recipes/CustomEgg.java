@@ -55,7 +55,7 @@ public class CustomEgg {
         this.entity = entity;
         this.spawnAmount = spawnAmount;
         this.glow = glow;
-        this.glowColor = glowColor;
+        this.glowColor = glowColor.toLowerCase();
     }
 
     public static void setupEggs() {

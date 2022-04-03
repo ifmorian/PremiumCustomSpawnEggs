@@ -41,6 +41,7 @@ public class EntityDeathListener implements Listener {
         int id = event.getEntity().getEntityId();
         CustomMob mob = CustomMob.mobs.get(id);
         if (mob != null) {
+            if (!mob.dropsOnDeath) event.getDrops().clear();
             if (mob.r != null) mob.r.cancel();
             Inventory inv = Bukkit.getPlayer(mob.owner).getInventory();
             int slot = MobRemote.getRemoteSlot(inv, mob.id);
