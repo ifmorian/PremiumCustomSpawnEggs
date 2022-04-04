@@ -21,16 +21,22 @@ public class ProjectileHitListener implements Listener {
     public void onProjectileHit(ProjectileHitEvent event) {
         Projectile projectile = event.getEntity();
         String mobID = projectile.getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "pcse_entity"), PersistentDataType.STRING);
-        if (mobID == null) return;
-        if (hits.contains(projectile)) {
-            hits.remove(projectile);
+        if (mobID != null) {
+            if (hits.contains(projectile)) {
+                hits.remove(projectile);
+                event.setCancelled(true);
+                return;
+            }
+            projectile.remove();
+            hits.add(projectile);
+            Main.getCfgM().getMob(mobID, ((CraftProjectile)projectile).getHandle().getOwner().getUUID()).spawnEntity(projectile.getLocation());
             event.setCancelled(true);
             return;
         }
-        projectile.remove();
-        hits.add(projectile);
-        Main.getCfgM().getMob(mobID, ((CraftProjectile)projectile).getHandle().getOwner().getUUID()).spawnEntity(projectile.getLocation());
-        event.setCancelled(true);
+        Integer fire = projectile.getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "pcse_fire"), PersistentDataType.INTEGER);
+        if (fire != null) {
+            event.getHitEntity().setFireTicks(fire);
+        }
     }
 
 }

@@ -2,6 +2,7 @@
 #Material list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #EntityType list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html (Only use living entities, e.g. do not use 'ARROW')
 #Color list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/ChatColor.html
+#Particle list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
 #
 #
 #The link to the resource pack (make sure that it is an auto-download link, e.g. a dropbox-link should end on "?dl=1")
@@ -147,6 +148,8 @@ mobs:
     explosionPower: 3
     #Set to 0 to disable
     lavaRadius: 1
+    #How long the damaged Entity should burn (in Ticks)
+    fireExplosion: 0
     #Set to 1 to destroy every block in range, set to 0 to turn off breaking blocks
     explosionBreakBlockChance: 0.9
     #If Blocks should drop loot (usually an explosion drops every second block)
@@ -176,6 +179,8 @@ mobs:
     walkToTargetSpeed: 1.3
     attackTriggerRange: 30
     multiAttack: false
+    #How long the attacked entity should burn (in Ticks)
+    fireAttack: 100
     #
     #Material for specific blocks, "all" for all and, "none" for none
     breakBlocks: "OBSIDIAN,DIAMOND_BLOCK"
@@ -191,7 +196,7 @@ mobs:
     #How many blocks till mob stops
     maxBlocks: 10
 
-activeAbilities:
+movementAbilities:
   #Abilities should be unique
   walk_to_spot:
     name: "§aWalk to Click"
@@ -200,5 +205,13 @@ activeAbilities:
     #Max range of the remote to the mob and the clicked locations
     maxDistClick: 50
     maxDistMob: 20
-    #clicked location: "clicked", entity (specify below): "entity", blocktype: "block"
+    #clicked location: "clicked", entity (specify below): "entity", block (specify below): "block"
     goTo: "clicked"
+    entities: "none"
+    blocks: "none"
+    range: 10
+    speed: 1.1
+    #"x,y,z", "x~" for x-times the direction the mob is facing (e.g. 0.2~,1,0.2~) and "x*" for x-times the current velocity (e.g. 1*,1,1*)
+    velocity: "0,0,0"
+    particle: "DRAGON_BREATH"
+    particleAmount: 1

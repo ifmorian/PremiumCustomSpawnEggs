@@ -16,10 +16,7 @@ import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
@@ -29,6 +26,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -61,6 +59,7 @@ public class CustomMob {
     public int explosionPotionAmplifier;
     public double exlosionPower;
     public int lavaRadius;
+    public int fireExplosion;
     public double explosionBreakBlockChance;
     public double explosionDropBlockChance;
     public int explosionTimer;
@@ -72,6 +71,7 @@ public class CustomMob {
     public int attackDamage;
     public int attackSpeed;
     public double attackRange;
+    public int fireAttack;
     public float walkToTargetSpeed;
     public int attackTriggerRange;
     public boolean multiAttack;
@@ -91,9 +91,9 @@ public class CustomMob {
     private final static HashMap<Block, Integer> blocks = new HashMap<>();
 
     public CustomMob(UUID owner, String id, String name, String type, boolean glow, String glowColor, int health, float speed, boolean multiRemote, boolean dropsOnDeath,
-                     int explosionRadius, int explosionDamage, String explosionPotion, int explosionPotionDuration, int explosionPotionAmplifier, double explosionPower, int lavaRadius,
+                     int explosionRadius, int explosionDamage, String explosionPotion, int explosionPotionDuration, int explosionPotionAmplifier, double explosionPower, int lavaRadius, int fireExplosion,
                      double explosionBreakBlocksChance, double explosionDropBlockChance, int explosionTimer, double explosionFlashRange, boolean randomStroll, float strollSpeed, String attackEntities, String attackType, int attackDamage,
-                     int attackSpeed, double attackRange, float walkToTargetSpeed, int attackTriggerRange, boolean multiAttack, String breakBlocks, int breakDamage, int breakSpeed, float walkToBlockSpeed, int breakTriggerRange,
+                     int attackSpeed, double attackRange, float walkToTargetSpeed, int attackTriggerRange, boolean multiAttack, int fireAttack, String breakBlocks, int breakDamage, int breakSpeed, float walkToBlockSpeed, int breakTriggerRange,
                      boolean multiBreak, boolean prioritizeBlocks, int maxBlocks) {
         this.owner = owner;
         this.id = id;
@@ -112,6 +112,7 @@ public class CustomMob {
         this.explosionPotionAmplifier = explosionPotionAmplifier;
         this.exlosionPower = explosionPower;
         this.lavaRadius = lavaRadius;
+        this.fireExplosion = fireExplosion;
         this.explosionBreakBlockChance = explosionBreakBlocksChance;
         this.explosionDropBlockChance = explosionDropBlockChance;
         this.explosionTimer = explosionTimer;
@@ -126,6 +127,7 @@ public class CustomMob {
         this.walkToTargetSpeed = walkToTargetSpeed;
         this.attackTriggerRange = attackTriggerRange;
         this.multiAttack = multiAttack;
+        this.fireAttack = fireAttack;
         this.breakBlocks = new ArrayList<>(Arrays.asList(breakBlocks.toUpperCase().split(",")));
         this.breakDamage = breakDamage;
         this.breakSpeed = breakSpeed;
@@ -187,7 +189,7 @@ public class CustomMob {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    explode();
+                    explode(fireExplosion);
                 }
             }.runTaskLater(Main.getPlugin(), explosionTimer);
         }
@@ -239,10 +241,11 @@ public class CustomMob {
                                         switch (attackType) {
                                             case "melee" -> {
                                                 le.damage(attackDamage, entity.getBukkitEntity());
+                                                le.setFireTicks(fireAttack);
                                                 dmgSmth[0] = true;
                                                 notDamaged[0] = multiAttack;
                                                 l.add(l.getDirection().multiply(.4));
-                                                l.getWorld().spawnParticle(Particle.CRIT, l, 5);
+                                                l.getWorld().spawnParticle(fireAttack > 0 ? Particle.FLAME : Particle.CRIT, l, 5);
                                                 entity.swing(InteractionHand.MAIN_HAND);
                                             }
                                             case "range" -> {
@@ -251,6 +254,8 @@ public class CustomMob {
                                                     lle.setY(lle.getY() + le.getEyeHeight());
                                                     Arrow arrow = (Arrow) l.getWorld().spawnEntity(l, EntityType.ARROW);
                                                     arrow.setDamage(attackDamage);
+                                                    arrow.setVisualFire(fireAttack > 0);
+                                                    arrow.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "pcse_fire"), PersistentDataType.INTEGER, fireAttack);
                                                     arrow.setVelocity(lle.subtract(l).toVector().normalize().multiply(1.4));
                                                     arrow.setShooter((ProjectileSource) entity.getBukkitEntity());
                                                 }
@@ -263,7 +268,7 @@ public class CustomMob {
                                                     public void run() {
                                                         if (a[0] >= 5) {
                                                             if (le.getLocation().distance(l) <= attackRange + 2) {
-                                                                explode();
+                                                                explode(fireAttack);
                                                             } else {
                                                                 startBehavior();
                                                             }
@@ -353,7 +358,7 @@ public class CustomMob {
         }
     }
 
-    private void explode() {
+    private void explode(int fire) {
         if (entity.isAlive() && explosionRadius > 0) {
             Location l = entity.getBukkitEntity().getLocation();
             PacketContainer packet = manager.createPacket(PacketType.Play.Server.EXPLOSION);
@@ -371,6 +376,7 @@ public class CustomMob {
                         Main.c.sendMessage(Main.PRE + "§cInvalid potion effect §6" + explosionPotion);
                     }
                     ent1.damage(explosionDamage, Bukkit.getPlayer(owner));
+                    ent1.setFireTicks(fire);
                     ent1.setVelocity(new Vector(ent1.getLocation().getX() - l.getX(), ent1.getLocation().getY() - l.getY() + 0.001, ent1.getLocation().getZ() - l.getZ()).normalize().multiply(exlosionPower).add(new Vector(0,0.2 * exlosionPower,0)));
                 }
             });
