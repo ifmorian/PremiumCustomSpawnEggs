@@ -1,6 +1,8 @@
 package de.felix_kurz.premiumcustomspawneggs.configuration;
 
 import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
+import de.felix_kurz.premiumcustomspawneggs.entities.abilities.AttackAbility;
+import de.felix_kurz.premiumcustomspawneggs.entities.abilities.MovementAbility;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -82,7 +84,7 @@ public class ConfigurationManager {
                 cfg.getDouble("mobs." + mob + ".explosionBreakBlockChance"),
                 cfg.getDouble("mobs." + mob + ".explosionDropBlockChance"),
                 cfg.getInt("mobs." + mob + ".explosionTimer"),
-                cfg.getDouble("nobs." + mob + ".explosionFlashRange"),
+                cfg.getDouble("mobs." + mob + ".explosionFlashRange"),
                 cfg.getBoolean("mobs." + mob + ".randomStroll"),
                 (float) cfg.getDouble("mobs." + mob + ".strollSpeed"),
                 cfg.getString("mobs." + mob + ".attackEntities"),
@@ -101,7 +103,53 @@ public class ConfigurationManager {
                 cfg.getInt("mobs." + mob + ".breakTriggerRange"),
                 cfg.getBoolean("mobs." + mob + ".multiBreak"),
                 cfg.getBoolean("mobs." + mob + ".prioritizeBlocks"),
-                cfg.getInt("mobs." + mob + ".maxBlocks")
+                cfg.getInt("mobs." + mob + ".maxBlocks"),
+                cfg.getConfigurationSection("mobs." + mob + ".abilities"),
+                cfg.getInt("mobs." + mob + ".explosionFlashDuration"),
+                cfg.getBoolean("mobs." + mob + ".explosionFlashOwner"),
+                cfg.getString("mobs." + mob + ".dontBreak")
+        );
+    }
+
+    public MovementAbility getMovementsAbility(String ability, CustomMob mob) {
+        ConfigurationSection s = cfg.getConfigurationSection("movementAbilities." + ability);
+        return new MovementAbility(
+                mob,
+                ability,
+                s.getString("name"),
+                s.getDouble("maxDistClick"),
+                s.getDouble("range"),
+                s.getString("particle"),
+                s.getInt("particleAmount"),
+                s.getInt("cooldown"),
+                s.getDouble("maxDistMob"),
+                s.getString("goTo"),
+                s.getString("entities"),
+                s.getString("blocks"),
+                s.getDouble("speed"),
+                s.getLong("delay"),
+                s.getString("velocity")
+        );
+    }
+
+    public AttackAbility getAttackAbility(String ability, CustomMob mob) {
+        ConfigurationSection s = cfg.getConfigurationSection("attackAbilities." + ability);
+        return new AttackAbility(
+                mob,
+                ability,
+                s.getString("name"),
+                s.getDouble("maxDistMob"),
+                s.getDouble("range"),
+                s.getString("particle"),
+                s.getInt("particleAmount"),
+                s.getInt("cooldown"),
+                s.getLong("delay"),
+                s.getString("velocity"),
+                s.getString("entities"),
+                s.getInt("damage"),
+                s.getInt("fire"),
+                s.getBoolean("multi"),
+                s.getDouble("knockback")
         );
     }
 

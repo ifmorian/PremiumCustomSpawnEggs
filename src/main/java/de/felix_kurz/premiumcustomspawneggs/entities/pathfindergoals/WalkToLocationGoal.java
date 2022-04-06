@@ -1,13 +1,8 @@
 package de.felix_kurz.premiumcustomspawneggs.entities.pathfindergoals;
 
 import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.animal.Chicken;
-import net.minecraft.world.level.pathfinder.Path;
 import org.bukkit.Location;
 
 public class WalkToLocationGoal extends Goal {

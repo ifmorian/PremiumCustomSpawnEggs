@@ -5,13 +5,14 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.BlockPosition;
-import de.felix_kurz.premiumcustomspawneggs.items.remote.MobRemote;
+import de.felix_kurz.premiumcustomspawneggs.entities.abilities.Ability;
+import de.felix_kurz.premiumcustomspawneggs.items.MobRemote;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.level.Level;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.pathfinder.Path;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
@@ -64,6 +66,8 @@ public class CustomMob {
     public double explosionDropBlockChance;
     public int explosionTimer;
     public double explosionFlashRange;
+    public int explosionFlashDuration;
+    public boolean explosionFlashOwner;
     public boolean randomStroll;
     public float strollSpeed;
     public List<String> attackEntities;
@@ -83,6 +87,9 @@ public class CustomMob {
     public boolean multiBreak;
     public boolean prioritizeBlocks;
     public int maxBlocks;
+    public List<String> dontBreak;
+
+    public Ability[] abilities = new Ability[4];
 
     public BukkitTask r;
 
@@ -94,7 +101,7 @@ public class CustomMob {
                      int explosionRadius, int explosionDamage, String explosionPotion, int explosionPotionDuration, int explosionPotionAmplifier, double explosionPower, int lavaRadius, int fireExplosion,
                      double explosionBreakBlocksChance, double explosionDropBlockChance, int explosionTimer, double explosionFlashRange, boolean randomStroll, float strollSpeed, String attackEntities, String attackType, int attackDamage,
                      int attackSpeed, double attackRange, float walkToTargetSpeed, int attackTriggerRange, boolean multiAttack, int fireAttack, String breakBlocks, int breakDamage, int breakSpeed, float walkToBlockSpeed, int breakTriggerRange,
-                     boolean multiBreak, boolean prioritizeBlocks, int maxBlocks) {
+                     boolean multiBreak, boolean prioritizeBlocks, int maxBlocks, ConfigurationSection abilities, int explosionFlashDuration, boolean explosionFlashOwner, String dontBreak) {
         this.owner = owner;
         this.id = id;
         this.name = name;
@@ -136,6 +143,17 @@ public class CustomMob {
         this.multiBreak = multiBreak;
         this.prioritizeBlocks = prioritizeBlocks;
         this.maxBlocks = maxBlocks;
+        for (int i = 0; i < 4; i++) {
+            try {
+                switch (abilities.getString(i + ".type").toUpperCase()) {
+                    case "M" -> this.abilities[i] = Main.getCfgM().getMovementsAbility(abilities.getString(i + ".ability"), this);
+                    case "A" -> this.abilities[i] = Main.getCfgM().getAttackAbility(abilities.getString(i + ".ability"), this);
+                }
+            } catch (Exception ignore) {}
+        }
+        this.explosionFlashDuration = explosionFlashDuration;
+        this.explosionFlashOwner = explosionFlashOwner;
+        this.dontBreak = new ArrayList<>(Arrays.asList(dontBreak.toUpperCase().split(",")));
     }
 
     public void spawnEntity(Location l) {
@@ -167,9 +185,9 @@ public class CustomMob {
         Tuple<Integer, Boolean> slotAndSpace = MobRemote.getRemoteSlotAndHasSpace(p.getInventory(), id);
 
         if (slotAndSpace.getA() == -1 || !multiRemote) {
-            if (slotAndSpace.getB()) p.getInventory().addItem(new MobRemote(new int[]{entity.getId()}, id).item);
+            if (slotAndSpace.getB()) p.getInventory().addItem(new MobRemote(new int[]{entity.getId()}, this).item);
             else {
-                p.getWorld().dropItem(p.getLocation(), new MobRemote(new int[]{entity.getId()}, id).item);
+                p.getWorld().dropItem(p.getLocation(), new MobRemote(new int[]{entity.getId()}, this).item);
             }
         } else {
             net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(p.getInventory().getItem(slotAndSpace.getA()));
@@ -228,7 +246,7 @@ public class CustomMob {
                                 Path path = entity.getNavigation().createPath(((CraftEntity)le).getHandle(), (int ) attackRange - 1);
 
                                 if (path != null && path.canReach()) {
-                                    if (distance < maxDistance[0] || attackEntities.indexOf(le.getType().toString()) < prio[0]) {
+                                    if (distance < maxDistance[0] && attackEntities.indexOf(le.getType().toString()) <= prio[0]) {
                                         entity.getNavigation().moveTo(path, walkToTargetSpeed);
                                         movesToEntity[0] = true;
                                         prio[0] = attackEntities.indexOf(le.getType().toString());
@@ -360,6 +378,7 @@ public class CustomMob {
 
     private void explode(int fire) {
         if (entity.isAlive() && explosionRadius > 0) {
+            CraftEntity cEnt = entity.getBukkitEntity();
             Location l = entity.getBukkitEntity().getLocation();
             PacketContainer packet = manager.createPacket(PacketType.Play.Server.EXPLOSION);
             packet.getDoubles().write(0, l.getX());
@@ -367,8 +386,12 @@ public class CustomMob {
             packet.getDoubles().write(2, l.getZ());
             packet.getFloat().write(0, (float) explosionRadius);
             manager.broadcastServerPacket(packet);
-            entity.getBukkitEntity().getNearbyEntities(explosionRadius, explosionRadius, explosionRadius).forEach(ent -> {
+            cEnt.getNearbyEntities(explosionRadius, explosionRadius, explosionRadius).forEach(ent -> {
                 if (ent instanceof org.bukkit.entity.LivingEntity ent1) {
+                    CustomMob leMob = mobs.get(ent1.getEntityId());
+                    if (leMob != null) {
+                        if (leMob.owner.equals(owner)) return;
+                    }
                     if (ent1.getUniqueId().equals(owner)) return;
                     try {
                         ent1.addPotionEffect(PotionEffectType.getByName(explosionPotion).createEffect(explosionPotionDuration, explosionPotionAmplifier));
@@ -380,6 +403,16 @@ public class CustomMob {
                     ent1.setVelocity(new Vector(ent1.getLocation().getX() - l.getX(), ent1.getLocation().getY() - l.getY() + 0.001, ent1.getLocation().getZ() - l.getZ()).normalize().multiply(exlosionPower).add(new Vector(0,0.2 * exlosionPower,0)));
                 }
             });
+            cEnt.getNearbyEntities(explosionFlashRange, explosionFlashRange, explosionFlashRange).forEach(e -> {
+                if (e instanceof Player p) {
+                    if (!explosionFlashOwner && e.getUniqueId().equals(owner)) return;
+                    if (p.getLocation().distance(cEnt.getLocation()) <= explosionFlashRange) {
+                        Vector d = new Vector(l.getX() - p.getLocation().getX(), l.getY() - p.getLocation().getY(), l.getZ() - p.getLocation().getZ());
+                        if (p.hasLineOfSight(cEnt) && d.angle(p.getLocation().getDirection()) < Math.PI / 2)
+                        p.addPotionEffect(PotionEffectType.BLINDNESS.createEffect(explosionFlashDuration, 1));
+                    }
+                }
+            });
             int bx = l.getBlockX();
             int by = l.getBlockY();
             int bz = l.getBlockZ();
@@ -389,23 +422,29 @@ public class CustomMob {
                     for(int z = bz - explosionRadius; z <= bz + explosionRadius; z++) {
                         double distance = ((bx-x) * (bx-x) + ((bz-z) * (bz-z)) + ((by-y) * (by-y)));
                         if(distance < explosionRadius * explosionRadius) {
+                            Block block = l.getWorld().getBlockAt(x, y, z);
+                            if (dontBreak.contains(block.getType().toString())) continue;
                             if (explosionBreakBlockChance <= Math.random()) continue;
                             if (explosionDropBlockChance > Math.random()) {
-                                l.getWorld().getBlockAt(x, y, z).breakNaturally();
+                                block.breakNaturally();
                             } else {
-                                l.getWorld().getBlockAt(x, y, z).setType(Material.AIR);
+                                block.setType(Material.AIR);
                             }
                         }
                     }
                 }
             }
-            for (int x = bx - lavaRadius; x <= bx + lavaRadius; x++) {
-                for (int z = bz - lavaRadius; z <= bz + lavaRadius; z++) {
-                    double distance = ((bx - x) * (bx - x)) + ((bz - z) * (bz - z));
-                    if (distance < lavaRadius * lavaRadius - 1) {
-                        l.getWorld().getBlockAt(x, by, z).setType(Material.LAVA);
+            if (lavaRadius > 1) {
+                for (int x = bx - lavaRadius; x <= bx + lavaRadius; x++) {
+                    for (int z = bz - lavaRadius; z <= bz + lavaRadius; z++) {
+                        double distance = ((bx - x) * (bx - x)) + ((bz - z) * (bz - z));
+                        if (distance < lavaRadius * lavaRadius - 1) {
+                            l.getWorld().getBlockAt(x, by, z).setType(Material.LAVA);
+                        }
                     }
                 }
+            } else {
+                l.getWorld().getBlockAt(bx, by, bz).setType(Material.LAVA);
             }
         }
         entity.kill();

@@ -7,7 +7,6 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class ProjectileHitListener implements Listener {
             return;
         }
         Integer fire = projectile.getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "pcse_fire"), PersistentDataType.INTEGER);
-        if (fire != null) {
+        if (fire != null && event.getHitEntity() != null) {
             event.getHitEntity().setFireTicks(fire);
         }
     }

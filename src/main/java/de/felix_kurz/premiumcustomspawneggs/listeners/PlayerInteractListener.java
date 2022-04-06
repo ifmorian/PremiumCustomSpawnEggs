@@ -4,15 +4,13 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import de.felix_kurz.premiumcustomspawneggs.configuration.ConfigurationManager;
 import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
-import de.felix_kurz.premiumcustomspawneggs.entities.pathfindergoals.WalkToLocationGoal;
+import de.felix_kurz.premiumcustomspawneggs.entities.abilities.Ability;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
-import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftProjectile;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Egg;
@@ -21,7 +19,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerEggThrowEvent;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.PlayerInventory;
@@ -44,24 +41,26 @@ public class PlayerInteractListener implements Listener {
             CompoundTag tag = nmsItem.getTag();
             if (!tag.getString("pcse_entity").equals("")) {
                 String id = tag.getString("pcse_entity");
-                Egg projectile = p.launchProjectile(Egg.class);
-                projectile.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "pcse_entity"), PersistentDataType.STRING, id);
-                if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                    projectile.setCustomName(Main.getPlugin().getConfig().getString("mobs." + id + ".name"));
-                    projectile.setCustomNameVisible(true);
-                    if (tag.getBoolean("pcse_glow")) {
-                        try {
-                            Main.getScoreboard().getTeam(tag.getString("pcse_color")).addEntry(projectile.getUniqueId().toString());
-                        } catch (Exception ignore) {
-                            Main.c.sendMessage(Main.PRE + "§cInvalid color §6" + tag.getString("pcse_color"));
+                for (int i = 0; i < tag.getInt("pcse_amount"); i++) {
+                    Egg projectile = p.launchProjectile(Egg.class);
+                    projectile.getPersistentDataContainer().set(new NamespacedKey(Main.getPlugin(), "pcse_entity"), PersistentDataType.STRING, id);
+                    if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+                        projectile.setCustomName(Main.getPlugin().getConfig().getString("mobs." + id + ".name"));
+                        projectile.setCustomNameVisible(true);
+                        if (tag.getBoolean("pcse_glow")) {
+                            try {
+                                Main.getScoreboard().getTeam(tag.getString("pcse_color")).addEntry(projectile.getUniqueId().toString());
+                            } catch (Exception ignore) {
+                                Main.c.sendMessage(Main.PRE + "§cInvalid color §6" + tag.getString("pcse_color"));
+                            }
+                            projectile.setGlowing(true);
                         }
-                        projectile.setGlowing(true);
+                    } else if (event.getClickedBlock() != null && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+                        ((CraftProjectile) projectile).getHandle().setInvisible(true);
+                        projectile.setGravity(false);
+                    } else {
+                        projectile.remove();
                     }
-                } else if (event.getClickedBlock() != null && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
-                    ((CraftProjectile) projectile).getHandle().setInvisible(true);
-                    projectile.setGravity(false);
-                } else {
-                    projectile.remove();
                 }
 //                if (event.getClickedBlock() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 //                Location l = event.getClickedBlock().getLocation();
@@ -71,20 +70,24 @@ public class PlayerInteractListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
+            if (tag.getIntArray("pcse_con_mobs").length > 0) {
+                for (int id : nmsItem.getTag().getIntArray("pcse_con_mobs")) {
+                    CustomMob mob = CustomMob.mobs.get(id);
+                    if (mob != null) {
+                        Location l = mob.entity.getBukkitEntity().getLocation();
+                        if ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+                            Ability a = mob.abilities[p.isSneaking() ? 2 : 0];
+                            if (a != null) a.execute(p);
 
-            for (int id : nmsItem.getTag().getIntArray("pcse_con_mobs")) {
-                Block b = event.getPlayer().getTargetBlockExact(50);
-                if (b == null) return;
-                Location bl = b.getLocation();
+                        }
+                        else if ((event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+                            Ability a = mob.abilities[p.isSneaking() ? 3 : 1];
+                            if (a != null) a.execute(p);
+                        }
 
-                CustomMob mob = CustomMob.mobs.get(id);
-
-                if (mob != null) {
-                    PathfinderMob e = mob.entity;
-                    if (mob.r != null) mob.r.cancel();
-                    e.goalSelector.removeAllGoals();
-                    e.goalSelector.addGoal(0, new WalkToLocationGoal(mob, bl, mob.speed));
+                    }
                 }
+                event.setCancelled(true);
             }
         }
 
@@ -92,7 +95,6 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler
     public void onEggThrow(PlayerEggThrowEvent event) {
-        System.out.println(event.isHatching());
         if (event.getEgg().getPersistentDataContainer().get(new NamespacedKey(Main.getPlugin(), "pcse_entity"), PersistentDataType.STRING) != null) event.setHatching(false);
     }
 

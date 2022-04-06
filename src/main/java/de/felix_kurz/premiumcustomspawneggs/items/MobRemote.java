@@ -1,6 +1,6 @@
-package de.felix_kurz.premiumcustomspawneggs.items.remote;
+package de.felix_kurz.premiumcustomspawneggs.items;
 
-import com.google.common.collect.Table;
+import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Tuple;
 import org.bukkit.Material;
@@ -16,33 +16,26 @@ import java.util.List;
 
 public class MobRemote {
 
-    private int[] mobIDs;
-    private String mobName;
-    private String mobID;
-
     public ItemStack item;
 
-    public MobRemote(int[] mobIDs, String mobID) {
-        this.mobIDs = mobIDs;
-        this.mobID = mobID;
-
+    public MobRemote(int[] mobIDs, CustomMob mob) {
         item = new ItemStack(Material.STICK);
 
         net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
         CompoundTag tag = nmsItem.hasTag() ? nmsItem.getTag() : new CompoundTag();
         tag.putIntArray("pcse_con_mobs", mobIDs);
-        tag.putString("pcse_mob_id", mobID);
+        tag.putString("pcse_mob_id", mob.id);
         nmsItem.setTag(tag);
         item = CraftItemStack.asBukkitCopy(nmsItem);
 
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§dRemote Control of " + mobID);
+        meta.setDisplayName("§dRemote Control of " + mob.id);
         meta.addEnchant(Enchantment.LOYALTY, 1, true);
         List<String> lore = new ArrayList<>();
-        lore.add("§7§lRIGHT ");
-        lore.add("§7§lLEFT ");
-        lore.add("§7§lSHIFT_RIGHT ");
-        lore.add("§7§lSHIFT_LEFT ");
+        if (mob.abilities[0] != null) lore.add("§7§lRIGHT " + mob.abilities[0].name);
+        if (mob.abilities[1] != null) lore.add("§7§lLEFT " + mob.abilities[1].name);
+        if (mob.abilities[2] != null) lore.add("§7§lSNEAK+RIGHT " + mob.abilities[2].name);
+        if (mob.abilities[3] != null) lore.add("§7§lSNEAK+LEFT " + mob.abilities[3].name);
         meta.setLore(lore);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
         item.setItemMeta(meta);

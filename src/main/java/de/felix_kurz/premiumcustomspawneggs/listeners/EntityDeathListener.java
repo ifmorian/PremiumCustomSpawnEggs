@@ -4,12 +4,13 @@ import com.google.common.primitives.Ints;
 import de.felix_kurz.premiumcustomspawneggs.configuration.ConfigurationManager;
 import de.felix_kurz.premiumcustomspawneggs.entities.CustomMob;
 import de.felix_kurz.premiumcustomspawneggs.items.CoreShard;
-import de.felix_kurz.premiumcustomspawneggs.items.remote.MobRemote;
+import de.felix_kurz.premiumcustomspawneggs.items.MobRemote;
 import de.felix_kurz.premiumcustomspawneggs.main.Main;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Slime;
 import org.bukkit.event.EventHandler;
@@ -26,17 +27,6 @@ public class EntityDeathListener implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        for (String path : cfgM.getShardMobs().getKeys(false)) {
-            if (path.equals(event.getEntityType().toString())) {
-                if (cfgM.getDropProbability(path) > Math.random()) {
-                    if (event.getEntityType() == EntityType.SLIME) {
-                        Slime slime = (Slime) event.getEntity();
-                        if (slime.getSize() != 1) return;
-                    }
-                    event.getEntity().getLocation().getWorld().dropItem(event.getEntity().getLocation(), new CoreShard().getItem());
-                }
-            }
-        }
 
         int id = event.getEntity().getEntityId();
         CustomMob mob = CustomMob.mobs.get(id);
@@ -61,6 +51,20 @@ public class EntityDeathListener implements Listener {
             }
         }
 
+        if (event.getEntity() instanceof Ageable a) {
+            if (!Main.getPlugin().getConfig().getBoolean("cores.shard.babyDrop") && !a.isAdult()) return;
+        }
+        for (String path : cfgM.getShardMobs().getKeys(false)) {
+            if (path.equals(event.getEntityType().toString())) {
+                if (cfgM.getDropProbability(path) > Math.random()) {
+                    if (event.getEntityType() == EntityType.SLIME) {
+                        Slime slime = (Slime) event.getEntity();
+                        if (slime.getSize() != 1) return;
+                    }
+                    event.getEntity().getLocation().getWorld().dropItem(event.getEntity().getLocation(), new CoreShard().getItem());
+                }
+            }
+        }
     }
 
 }
