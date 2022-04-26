@@ -11,11 +11,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class CorePiece {
 
-    private ConfigurationManager cfgM = Main.getCfgM();
-
     private ItemStack item;
 
     public CorePiece() {
+        ConfigurationManager cfgM = Main.getCfgM();
         item = new ItemStack(cfgM.getCoreMaterial("piece"));
 
         net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);

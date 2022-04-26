@@ -7,10 +7,10 @@ import org.bukkit.Location;
 
 public class WalkToLocationGoal extends Goal {
 
-    private float speed;
-    private CustomMob mob;
-    private Location l;
-    private PathNavigation nav;
+    private final float speed;
+    private final CustomMob mob;
+    private final Location l;
+    private final PathNavigation nav;
 
     public WalkToLocationGoal(CustomMob mob, Location l, float speed) {
         this.mob = mob;

@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.animal.Ocelot;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
 import org.bukkit.*;
@@ -23,6 +24,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftOcelot;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
@@ -46,48 +48,48 @@ public class CustomMob {
     public UUID owner;
 
     public String id;
-    public String name;
-    public String type;
-    public boolean glow;
-    public String glowColor;
-    public int health;
-    public float speed;
-    public boolean multiRemote;
-    public boolean dropsOnDeath;
-    public int explosionRadius;
-    public int explosionDamage;
-    public String explosionPotion;
-    public int explosionPotionDuration;
-    public int explosionPotionAmplifier;
-    public double exlosionPower;
-    public int lavaRadius;
-    public int fireExplosion;
-    public double explosionBreakBlockChance;
-    public double explosionDropBlockChance;
-    public int explosionTimer;
-    public double explosionFlashRange;
-    public int explosionFlashDuration;
-    public boolean explosionFlashOwner;
-    public boolean randomStroll;
-    public float strollSpeed;
-    public List<String> attackEntities;
-    public String attackType;
-    public int attackDamage;
-    public int attackSpeed;
-    public double attackRange;
-    public int fireAttack;
-    public float walkToTargetSpeed;
-    public int attackTriggerRange;
-    public boolean multiAttack;
-    public List<String> breakBlocks;
-    public int breakDamage;
-    public int breakSpeed;
-    public float walkToBlockSpeed;
-    public int breakTriggerRange;
-    public boolean multiBreak;
-    public boolean prioritizeBlocks;
-    public int maxBlocks;
-    public List<String> dontBreak;
+    private final String name;
+    private final String type;
+    private final boolean glow;
+    private final String glowColor;
+    private final int health;
+    private final float speed;
+    private final boolean multiRemote;
+    public final boolean dropsOnDeath;
+    private final int explosionRadius;
+    private final int explosionDamage;
+    private final String explosionPotion;
+    private final int explosionPotionDuration;
+    private final int explosionPotionAmplifier;
+    private final double exlosionPower;
+    private final int lavaRadius;
+    private final int fireExplosion;
+    private final double explosionBreakBlockChance;
+    private final double explosionDropBlockChance;
+    private final int explosionTimer;
+    private final double explosionFlashRange;
+    private final int explosionFlashDuration;
+    private final boolean explosionFlashOwner;
+    private final boolean randomStroll;
+    private final float strollSpeed;
+    private final List<String> attackEntities;
+    private final String attackType;
+    private final int attackDamage;
+    private final int attackSpeed;
+    private final double attackRange;
+    private final int fireAttack;
+    private final float walkToTargetSpeed;
+    private final int attackTriggerRange;
+    private final boolean multiAttack;
+    private final List<String> breakBlocks;
+    private final int breakDamage;
+    private final int breakSpeed;
+    private final float walkToBlockSpeed;
+    private final int breakTriggerRange;
+    private final boolean multiBreak;
+    private final boolean prioritizeBlocks;
+    private int maxBlocks;
+    private final List<String> dontBreak;
 
     public Ability[] abilities = new Ability[4];
 
@@ -393,10 +395,12 @@ public class CustomMob {
                         if (leMob.owner.equals(owner)) return;
                     }
                     if (ent1.getUniqueId().equals(owner)) return;
-                    try {
-                        ent1.addPotionEffect(PotionEffectType.getByName(explosionPotion).createEffect(explosionPotionDuration, explosionPotionAmplifier));
-                    } catch (Exception ignore) {
-                        Main.c.sendMessage(Main.PRE + "§cInvalid potion effect §6" + explosionPotion);
+                    if (!explosionPotion.equals("")) {
+                        try {
+                            ent1.addPotionEffect(PotionEffectType.getByName(explosionPotion).createEffect(explosionPotionDuration, explosionPotionAmplifier));
+                        } catch (Exception ignore) {
+                            Main.c.sendMessage(Main.PRE + "§cInvalid potion effect §6" + explosionPotion);
+                        }
                     }
                     ent1.damage(explosionDamage, Bukkit.getPlayer(owner));
                     ent1.setFireTicks(fire);

@@ -12,11 +12,9 @@ import java.util.UUID;
 
 public class ConfigurationManager {
 
-    private Main plugin;
-    private FileConfiguration cfg;
+    private final FileConfiguration cfg;
 
     public ConfigurationManager(Main plugin) {
-        this.plugin = plugin;
         plugin.saveDefaultConfig();
         cfg = plugin.getConfig();
     }
@@ -115,7 +113,6 @@ public class ConfigurationManager {
         ConfigurationSection s = cfg.getConfigurationSection("movementAbilities." + ability);
         return new MovementAbility(
                 mob,
-                ability,
                 s.getString("name"),
                 s.getDouble("maxDistClick"),
                 s.getDouble("range"),
@@ -136,7 +133,6 @@ public class ConfigurationManager {
         ConfigurationSection s = cfg.getConfigurationSection("attackAbilities." + ability);
         return new AttackAbility(
                 mob,
-                ability,
                 s.getString("name"),
                 s.getDouble("maxDistMob"),
                 s.getDouble("range"),

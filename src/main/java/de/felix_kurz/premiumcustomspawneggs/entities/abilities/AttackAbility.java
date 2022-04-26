@@ -14,15 +14,15 @@ import java.util.List;
 
 public class AttackAbility extends Ability {
 
-    public List<String> entities;
-    public int damage;
-    public int fire;
-    public boolean multi;
-    public double knockback;
+    private final List<String> entities;
+    private final int damage;
+    private final int fire;
+    private final boolean multi;
+    private final double knockback;
 
-    public AttackAbility(CustomMob mob, String id, String name, double maxDistMob, double range, String particle, int particleAmount, int cd, long delay, String velocity,
+    public AttackAbility(CustomMob mob, String name, double maxDistMob, double range, String particle, int particleAmount, int cd, long delay, String velocity,
                          String entities, int damage, int fire, boolean multi, double knockback) {
-        super(mob, id, name, maxDistMob, range, particle, particleAmount, cd, delay, velocity);
+        super(mob, name, maxDistMob, range, particle, particleAmount, cd, delay, velocity);
         this.entities = new ArrayList<>(Arrays.asList(entities.toUpperCase().split(",")));
         this.damage = damage;
         this.fire = fire;

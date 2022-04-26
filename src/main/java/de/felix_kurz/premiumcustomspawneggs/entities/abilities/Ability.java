@@ -14,20 +14,18 @@ public abstract class Ability {
 
     public CustomMob mob;
 
-    public String id;
-    public String name;
-    public double maxDistMob;
-    public double range;
-    public String particle;
-    public int particleAmount;
-    public int cd;
-    public boolean ready;
-    public long delay;
-    public String velocity;
+    public final String name;
+    public final double maxDistMob;
+    public final double range;
+    private final String particle;
+    private final int particleAmount;
+    private final int cd;
+    private boolean ready;
+    public final long delay;
+    private final String velocity;
 
-    public Ability(CustomMob mob, String id, String name, double maxDistMob, double range, String particle, int particleAmount, int cd, long delay, String velocity) {
+    public Ability(CustomMob mob, String name, double maxDistMob, double range, String particle, int particleAmount, int cd, long delay, String velocity) {
         this.mob = mob;
-        this.id = id;
         this.name = name;
         this.maxDistMob = maxDistMob;
         this.range = range;
@@ -42,6 +40,7 @@ public abstract class Ability {
     public abstract void execute(Player p);
 
     public void spawnParticles() {
+        if (particle.equals("")) return;
         Location l = mob.entity.getBukkitEntity().getLocation();
         l.setY(l.getY() + mob.entity.getBbHeight());
         try {

@@ -29,13 +29,13 @@ public class CustomEgg {
     private final Material type;
     private final boolean enchanted;
     private final boolean throwable;
-    private int amount;
+    private final int amount;
     private final HashMap<Character, String> ingredients;
     private final String[] matrix;
     private final String entity;
     private final int spawnAmount;
-    private boolean glow;
-    private String glowColor;
+    private final boolean glow;
+    private final String glowColor;
 
     private ItemStack item;
     private ShapedRecipe recipe;
@@ -101,9 +101,7 @@ public class CustomEgg {
                     case "fullcore" -> recipe.setIngredient(entry.getKey(), new RecipeChoice.ExactChoice(new FullCore().getItem()));
                     case "piece" -> recipe.setIngredient(entry.getKey(), new RecipeChoice.ExactChoice(new CorePiece().getItem()));
                     case "shard" -> recipe.setIngredient(entry.getKey(), new RecipeChoice.ExactChoice(new CoreShard().getItem()));
-                    default -> {
-                        recipe.setIngredient(entry.getKey(), Material.getMaterial(entry.getValue()));
-                    }
+                    default -> recipe.setIngredient(entry.getKey(), Material.getMaterial(entry.getValue()));
                 }
             } catch (Exception ignore) {}
         }
