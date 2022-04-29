@@ -9,6 +9,7 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        if (!Main.getCfgM().getUseRessourcepack()) return;
         event.getPlayer().setResourcePack(Main.getCfgM().getResourcePackLink());
     }
 

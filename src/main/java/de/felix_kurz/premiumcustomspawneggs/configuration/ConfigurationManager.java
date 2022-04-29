@@ -59,6 +59,10 @@ public class ConfigurationManager {
         return (ConfigurationSection) cfg.get("eggs." + egg);
     }
 
+    public boolean getUseRessourcepack() {
+        return cfg.getBoolean("useRessourcepack");
+    }
+
     public CustomMob getMob(String mob, UUID owner) {
         return new CustomMob(
                 owner,

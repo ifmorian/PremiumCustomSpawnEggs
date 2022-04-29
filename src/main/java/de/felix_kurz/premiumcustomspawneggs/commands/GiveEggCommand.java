@@ -17,8 +17,8 @@ public class GiveEggCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender,@NotNull Command command, @NotNull String label, @NotNull String[] args) {
-         if (!sender.hasPermission("giveegg.give")) {
-             sender.sendMessage("§cYou don't have the permission");
+         if (!sender.hasPermission("pcse.give")) {
+             sender.sendMessage(Main.PRE + "§cYou don't have the permission");
              return false;
          }
          if (args.length < 2) {

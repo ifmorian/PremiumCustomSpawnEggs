@@ -1,6 +1,8 @@
 package de.felix_kurz.premiumcustomspawneggs.main;
 
 import de.felix_kurz.premiumcustomspawneggs.commands.GiveEggCommand;
+import de.felix_kurz.premiumcustomspawneggs.commands.GiveShardCommand;
+import de.felix_kurz.premiumcustomspawneggs.commands.ReloadCommand;
 import de.felix_kurz.premiumcustomspawneggs.configuration.ConfigurationManager;
 import de.felix_kurz.premiumcustomspawneggs.listeners.*;
 import de.felix_kurz.premiumcustomspawneggs.recipes.CustomEgg;
@@ -34,6 +36,8 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ProjectileHitListener(), this);
 
         getCommand("giveegg").setExecutor(new GiveEggCommand());
+        getCommand("giveshard").setExecutor(new GiveShardCommand());
+        getCommand("pcsereload").setExecutor(new ReloadCommand());
 
         sb = this.getServer().getScoreboardManager().getMainScoreboard();
         for (ChatColor color : ChatColor.values()) {
